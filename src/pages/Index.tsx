@@ -202,7 +202,7 @@ const Index = () => {
               <div className="p-8 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 rounded-2xl text-white max-w-4xl mx-auto">
                 <h3 className="text-2xl font-bold mb-4">Ready to build your next project?</h3>
                 <p className="mb-6">Start generating complete full-stack applications today.</p>
-                <Button size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-blue-600">
+                <Button size="lg" variant="outline" className="text-blue-950 border-white hover:bg-white hover:text-blue-600">
                   <Download className="mr-2 h-5 w-5" /> Start Generating
                 </Button>
               </div>

@@ -97,7 +97,7 @@
   }
 
   body {
-    @apply bg-netflix-background text-white;
+    @apply bg-netflix-background text-blue-500 ;
     font-family: 'Inter', sans-serif;
   }
 }
