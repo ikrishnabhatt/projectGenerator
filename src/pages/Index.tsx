@@ -216,7 +216,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-lg font-semibold mb-4">ChaturCraft</h3>
+              <h3 className="text-lg font-semibold mb-4">Thynk AI</h3>
               <p className="text-gray-400">
                 Create powerful web applications instantly with AI-powered project generation.
               </p>
@@ -246,7 +246,7 @@ const Index = () => {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>© 2023 ChaturCraft. All rights reserved.</p>
+            <p>© 2025 Thynk AI. All rights reserved.</p>
           </div>
         </div>
       </footer>
