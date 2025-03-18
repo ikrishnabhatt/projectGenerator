@@ -1,4 +1,4 @@
-welcome to our peoject generator
+welcome to our project generator
 
 to install the project,run the following commands 
 

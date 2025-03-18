@@ -106,12 +106,12 @@ const Generator = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <img 
-              src="https://illustrations.popsy.co/amber/rocket.svg" 
-              alt="ChaturCraft" 
+              src="../public/logo.png"
+              alt="Thynk AI" 
               className="h-10 w-10" 
             />
             <h1 className="font-bold text-2xl bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
-              ChaturCraft
+              Thynk AI
             </h1>
           </div>
           

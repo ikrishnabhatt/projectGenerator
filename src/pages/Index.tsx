@@ -38,10 +38,16 @@ const Index = () => {
           </div>
           <div className="flex space-x-4">
             <Button variant="ghost">Templates</Button>
-            <Button variant="ghost">Pricing</Button>
             <Button variant="ghost">Docs</Button>
+            <Link to="/Pricing">
+            <Button variant="outline">Pricing</Button>
+            </Link>
+            <Link to="/login">
             <Button variant="outline">Login</Button>
-            <Button>Sign Up</Button>
+            </Link>
+            <Link to="/signup">
+            <Button className="black-button">Signup</Button>
+            </Link>
           </div>
         </div>
       </header>

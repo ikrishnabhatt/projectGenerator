@@ -141,3 +141,9 @@
     background: linear-gradient(0deg, rgba(20,20,20,1) 0%, rgba(20,20,20,0) 100%);
   }
 }
+
+.black-button {
+  background-color: black;
+  color: white;
+  border: none;
+}
