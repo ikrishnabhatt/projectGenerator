@@ -24,8 +24,9 @@ export type GeneratedProject = {
   downloadUrl?: string;
 };
 
-const DEEPSEEK_API_KEY = "sk-d112f3873fb54cfe86f3d53bc6fd677e";
-const DEEPSEEK_API_ENDPOINT = "https://api.deepseek.com/v1/chat/completions";
+// Hugging Face API
+const HUGGING_FACE_API_KEY = "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";
+const HUGGING_FACE_API_ENDPOINT = "https://api-inference.huggingface.co/models/codellama/CodeLlama-34b-Instruct-hf";
 
 const createProjectZip = async (project: GeneratedProject): Promise<string> => {
   try {
@@ -51,10 +52,11 @@ const createProjectZip = async (project: GeneratedProject): Promise<string> => {
 
 export const generateProject = async (requirements: ProjectRequirement): Promise<GeneratedProject> => {
   try {
-    toast.info("Starting project generation with DeepSeek AI...");
+    toast.info("Starting project generation with CodeLlama...");
     
     // Create a detailed and specific prompt for the AI
     const prompt = `
+    <INST>
     You are a professional web developer tasked with creating a complete ${requirements.projectType} application. Your task is to generate real, production-ready code based on the following requirements.
 
     Project Description: ${requirements.description}
@@ -111,39 +113,34 @@ export const generateProject = async (requirements: ProjectRequirement): Promise
       ├── models/
       ├── ...
     \`\`\`
+    </INST>
     `;
 
-    // Call DeepSeek API
-    const response = await fetch(DEEPSEEK_API_ENDPOINT, {
+    // Call HuggingFace API
+    const response = await fetch(HUGGING_FACE_API_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${DEEPSEEK_API_KEY}`
+        "Authorization": `Bearer ${HUGGING_FACE_API_KEY}`
       },
       body: JSON.stringify({
-        model: "deepseek-coder",
-        messages: [
-          {
-            role: "system",
-            content: "You are an expert full-stack developer who specializes in creating comprehensive web applications. You generate complete, working code (not examples or placeholders) for both frontend and backend."
-          },
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        temperature: 0.2,
-        max_tokens: 4000
+        inputs: prompt,
+        parameters: {
+          max_new_tokens: 4000,
+          temperature: 0.2,
+          top_p: 0.95,
+          do_sample: true
+        }
       })
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error?.message || "Failed to generate project with AI");
+      throw new Error(errorData.error || "Failed to generate project with AI");
     }
 
     const data = await response.json();
-    const aiResponse = data.choices[0]?.message?.content || "";
+    const aiResponse = typeof data === 'string' ? data : (data.generated_text || '');
 
     // Extract code snippets from the AI response with improved parsing
     let frontendCode = "// Generated Frontend Code\n";
@@ -340,6 +337,8 @@ export const getRecommendedFeatures = async (projectType: string): Promise<strin
       return ['Analytics charts', 'Data tables', 'Filtering', 'User management', 'Notifications'];
     case 'social media':
       return ['User profiles', 'Posts/Timeline', 'Messaging', 'Notifications', 'Friend connections'];
+    case 'portfolio':
+      return ['Project showcase', 'About section', 'Skills display', 'Contact form', 'Resume download'];
     default:
       return ['Authentication', 'User profiles', 'Data storage', 'API integration', 'Responsive design'];
   }
@@ -352,4 +351,3 @@ export const downloadProject = async (project: GeneratedProject): Promise<string
   
   return await createProjectZip(project);
 };
-

@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
+import { backgroundImages } from "@/assets/template-thumbnails";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -47,9 +48,12 @@ const Login = () => {
   return (
     <>
       <div className="min-h-[calc(100vh-64px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-purple-50 to-indigo-50">
-        <div className="absolute inset-0 z-0 opacity-10">
+        <div className="absolute inset-0 z-0 opacity-20">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-indigo-500" />
-          <div className="absolute inset-0 bg-[url('/lovable-uploads/4a7b9440-eda6-4273-bebc-4a08e6ae4c26.png')] bg-center bg-cover opacity-20" />
+          <div 
+            className="absolute inset-0 bg-center bg-cover" 
+            style={{ backgroundImage: `url(${backgroundImages.login})` }}
+          />
         </div>
         
         <Card className="w-full max-w-md relative z-10 shadow-xl">

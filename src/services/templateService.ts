@@ -1,4 +1,6 @@
 
+import { templateThumbnails } from "@/assets/template-thumbnails";
+
 export type Template = {
   id: string;
   name: string;
@@ -18,7 +20,7 @@ const templates: Template[] = [
     name: "Admin Dashboard",
     description: "Complete admin dashboard with analytics, user management, and data visualization",
     category: "Dashboard",
-    image: "/lovable-uploads/4a7b9440-eda6-4273-bebc-4a08e6ae4c26.png",
+    image: templateThumbnails.dashboard,
     techStack: ["React", "TypeScript", "Tailwind CSS", "Chart.js"],
     popularity: 95,
     author: "TailAdmin",
@@ -29,7 +31,7 @@ const templates: Template[] = [
     name: "E-commerce Store",
     description: "Fully-featured online store with product catalog, cart, and checkout",
     category: "E-commerce",
-    image: "/lovable-uploads/4a7b9440-eda6-4273-bebc-4a08e6ae4c26.png",
+    image: templateThumbnails.ecommerce,
     techStack: ["React", "Node.js", "MongoDB", "Stripe"],
     popularity: 92,
     author: "adrianhajdin",
@@ -40,7 +42,7 @@ const templates: Template[] = [
     name: "Developer Portfolio",
     description: "Professional portfolio website for developers with project showcase",
     category: "Portfolio",
-    image: "/lovable-uploads/4a7b9440-eda6-4273-bebc-4a08e6ae4c26.png",
+    image: templateThumbnails.portfolio,
     techStack: ["React", "Next.js", "Tailwind CSS"],
     popularity: 88,
     author: "soumyajit4419",
@@ -51,7 +53,7 @@ const templates: Template[] = [
     name: "Content Blog",
     description: "Clean and minimal blog with content management system",
     category: "Blog",
-    image: "/lovable-uploads/4a7b9440-eda6-4273-bebc-4a08e6ae4c26.png",
+    image: templateThumbnails.blog,
     techStack: ["React", "GraphQL", "Contentful"],
     popularity: 85,
     author: "realstoman",
@@ -62,7 +64,7 @@ const templates: Template[] = [
     name: "SaaS Landing Page",
     description: "Modern SaaS landing page with feature showcases and subscription plans",
     category: "SaaS",
-    image: "/lovable-uploads/4a7b9440-eda6-4273-bebc-4a08e6ae4c26.png",
+    image: templateThumbnails.saas,
     techStack: ["React", "Next.js", "Tailwind CSS", "Framer Motion"],
     popularity: 82,
     author: "cruip",
@@ -73,7 +75,7 @@ const templates: Template[] = [
     name: "React Native App",
     description: "Cross-platform mobile app template with authentication and navigation",
     category: "Mobile App",
-    image: "/lovable-uploads/4a7b9440-eda6-4273-bebc-4a08e6ae4c26.png",
+    image: templateThumbnails.mobileApp,
     techStack: ["React Native", "Expo", "Firebase", "Redux"],
     popularity: 78,
     author: "instamobile",
@@ -84,7 +86,7 @@ const templates: Template[] = [
     name: "Personal Blog",
     description: "Minimalist blog template with dark mode and responsive design",
     category: "Blog",
-    image: "/lovable-uploads/4a7b9440-eda6-4273-bebc-4a08e6ae4c26.png",
+    image: templateThumbnails.blog,
     techStack: ["React", "Gatsby", "Tailwind CSS", "MDX"],
     popularity: 76,
     author: "timlrx",
@@ -95,11 +97,33 @@ const templates: Template[] = [
     name: "Analytics Dashboard",
     description: "Data visualization dashboard with charts, tables, and filtering",
     category: "Dashboard",
-    image: "/lovable-uploads/4a7b9440-eda6-4273-bebc-4a08e6ae4c26.png",
+    image: templateThumbnails.dashboard,
     techStack: ["React", "TypeScript", "D3.js", "Material UI"],
     popularity: 74,
     author: "cruip",
     githubUrl: "https://github.com/cruip/open-react-template"
+  },
+  {
+    id: "template-9",
+    name: "Creative Portfolio",
+    description: "Stunning portfolio for designers and creatives with beautiful animations",
+    category: "Portfolio",
+    image: templateThumbnails.portfolio,
+    techStack: ["React", "Next.js", "Framer Motion", "Tailwind CSS"],
+    popularity: 72,
+    author: "bchiang7",
+    githubUrl: "https://github.com/bchiang7/v4"
+  },
+  {
+    id: "template-10",
+    name: "Company Website",
+    description: "Professional company website with team profiles and services showcase",
+    category: "Landing Page",
+    image: templateThumbnails.landingPage,
+    techStack: ["React", "Next.js", "Tailwind CSS"],
+    popularity: 70,
+    author: "cruip",
+    githubUrl: "https://github.com/cruip/tailwind-landing-page-template"
   }
 ];
 
@@ -148,4 +172,3 @@ export const downloadTemplate = async (template: Template): Promise<string> => {
     throw new Error("Failed to download template");
   }
 };
-

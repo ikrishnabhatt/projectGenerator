@@ -6,11 +6,11 @@ import { Link } from "react-router-dom";
 const Hero = () => {
   return (
     <section className="relative py-20 md:py-28 overflow-hidden">
-      {/* Background with pattern and overlay */}
+      {/* Background with gradient */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-50 to-white" />
-        <div className="absolute inset-0 bg-[url('/lovable-uploads/4a7b9440-eda6-4273-bebc-4a08e6ae4c26.png')] bg-center bg-cover opacity-10" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(124,58,237,0.1),transparent_60%)]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-100 via-blue-50 to-white" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(124,58,237,0.2),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(59,130,246,0.15),transparent_60%)]" />
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -39,12 +39,14 @@ const Hero = () => {
           </div>
           
           <div className="mt-16 flex justify-center animate-fade-in" style={{ animationDelay: "0.3s" }}>
-            <div className="bg-white p-4 rounded-lg shadow-xl max-w-xl">
-              <img 
-                src="/lovable-uploads/4a7b9440-eda6-4273-bebc-4a08e6ae4c26.png" 
-                alt="Project preview" 
-                className="rounded-md w-full" 
-              />
+            <div className="bg-white/80 p-4 rounded-lg shadow-xl max-w-xl backdrop-blur-sm border border-gray-100">
+              <div className="rounded-md overflow-hidden shadow-md">
+                <img 
+                  src="/lovable-uploads/dashboard-preview.png" 
+                  alt="Project preview" 
+                  className="w-full rounded-md" 
+                />
+              </div>
             </div>
           </div>
         </div>

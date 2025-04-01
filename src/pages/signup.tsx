@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
+import { backgroundImages } from "@/assets/template-thumbnails";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -19,7 +20,7 @@ const Signup = () => {
   const { signup, isAuthenticated } = useAuth();
 
   // Redirect if already logged in
-  useEffect(() => {
+  React.useEffect(() => {
     if (isAuthenticated) {
       navigate('/');
     }
@@ -38,15 +39,15 @@ const Signup = () => {
       return;
     }
 
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters long");
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters");
       return;
     }
 
     setLoading(true);
     
     try {
-      await signup(email, name, password);
+      await signup(name, email, password);
       navigate("/");
     } catch (error) {
       console.error("Signup error:", error);
@@ -59,16 +60,19 @@ const Signup = () => {
   return (
     <>
       <div className="min-h-[calc(100vh-64px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-purple-50 to-indigo-50">
-        <div className="absolute inset-0 z-0 opacity-10">
+        <div className="absolute inset-0 z-0 opacity-20">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-indigo-500" />
-          <div className="absolute inset-0 bg-[url('/lovable-uploads/4a7b9440-eda6-4273-bebc-4a08e6ae4c26.png')] bg-center bg-cover opacity-20" />
+          <div 
+            className="absolute inset-0 bg-center bg-cover" 
+            style={{ backgroundImage: `url(${backgroundImages.signup})` }}
+          />
         </div>
         
         <Card className="w-full max-w-md relative z-10 shadow-xl">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
             <CardDescription className="text-center">
-              Enter your information below to create your account
+              Enter your details below to create your account
             </CardDescription>
           </CardHeader>
           <CardContent>

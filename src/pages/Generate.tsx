@@ -11,9 +11,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Check, Copy, Download, Save, IndianRupee } from "lucide-react";
+import { Check, Copy, Download, Save, ArrowLeft, Palette, Edit, FileCode } from "lucide-react";
 import SubscriptionPrompt from "@/components/SubscriptionPrompt";
 import { useNavigate } from "react-router-dom";
+import { Separator } from "@/components/ui/separator";
 
 const Generate = () => {
   const { isAuthenticated, user, incrementProjectCount, checkRemainingGenerations } = useAuth();
@@ -31,10 +32,22 @@ const Generate = () => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [generatedProject, setGeneratedProject] = useState<GeneratedProject | null>(null);
   const [showSubscriptionPrompt, setShowSubscriptionPrompt] = useState(false);
+  const [projectName, setProjectName] = useState("");
+  const [projectTheme, setProjectTheme] = useState<string>("default");
   const [isCopied, setIsCopied] = useState({
     frontend: false,
     backend: false
   });
+
+  // Theme options for customization
+  const themeOptions = [
+    { value: "default", label: "Default (Purple/Blue)", color: "#7c3aed" },
+    { value: "green", label: "Nature Green", color: "#059669" },
+    { value: "blue", label: "Ocean Blue", color: "#2563eb" },
+    { value: "red", label: "Ruby Red", color: "#dc2626" },
+    { value: "orange", label: "Sunset Orange", color: "#ea580c" },
+    { value: "pink", label: "Rose Pink", color: "#db2777" },
+  ];
 
   const handleAddCustomFeature = () => {
     if (customFeature.trim() !== "" && !features.includes(customFeature.trim())) {
@@ -93,6 +106,7 @@ const Generate = () => {
 
     try {
       const project = await generateProject(requirements);
+      setProjectName(project.name); // Set initial project name
       setGeneratedProject(project);
       setStep(2);
       
@@ -115,8 +129,15 @@ const Generate = () => {
   const handleSaveProject = async () => {
     if (!generatedProject) return;
 
+    // Update project name before saving
+    const updatedProject = {
+      ...generatedProject,
+      name: projectName || generatedProject.name
+    };
+
     try {
-      await saveProject(generatedProject);
+      await saveProject(updatedProject);
+      setGeneratedProject(updatedProject);
       toast.success("Project saved successfully!");
     } catch (error) {
       console.error("Error saving project:", error);
@@ -140,14 +161,20 @@ const Generate = () => {
   const handleDownloadProject = async () => {
     if (!generatedProject) return;
 
+    // Update project with current name before downloading
+    const updatedProject = {
+      ...generatedProject,
+      name: projectName || generatedProject.name
+    };
+
     setIsDownloading(true);
     try {
-      const downloadUrl = await downloadProject(generatedProject);
+      const downloadUrl = await downloadProject(updatedProject);
       
       // Create an anchor element and trigger download
       const a = document.createElement('a');
       a.href = downloadUrl;
-      a.download = `${generatedProject.name.replace(/\s+/g, '-').toLowerCase()}.zip`;
+      a.download = `${updatedProject.name.replace(/\s+/g, '-').toLowerCase()}.zip`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -356,6 +383,80 @@ const Generate = () => {
           </Card>
         ) : (
           <div className="space-y-8">
+            {/* Project customization section */}
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle>Customize Your Project</CardTitle>
+                    <CardDescription className="mt-2">
+                      Personalize your generated project before downloading
+                    </CardDescription>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setStep(1)}
+                    className="flex items-center gap-1"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to Requirements
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="projectName">Project Name</Label>
+                  <Input
+                    id="projectName"
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
+                    placeholder="Enter a name for your project"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>Theme Color</Label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {themeOptions.map((theme) => (
+                      <div 
+                        key={theme.value}
+                        className={`p-4 border rounded-md cursor-pointer transition-all ${
+                          projectTheme === theme.value ? 'border-2 border-brand-purple' : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => setProjectTheme(theme.value)}
+                      >
+                        <div 
+                          className="w-full h-4 rounded-full mb-2"
+                          style={{ backgroundColor: theme.color }}
+                        ></div>
+                        <p className="text-sm text-center">{theme.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="flex justify-between gap-4 pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={handleSaveProject}
+                    className="flex-1"
+                  >
+                    <Save className="h-4 w-4 mr-2" /> Save Project
+                  </Button>
+                  <Button
+                    onClick={handleDownloadProject}
+                    disabled={isDownloading}
+                    className="flex-1 bg-brand-purple hover:bg-brand-purple/90"
+                  >
+                    <Download className="h-4 w-4 mr-2" /> 
+                    {isDownloading ? "Downloading..." : "Download Project"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Project details and code section */}
             <Card>
               <CardHeader>
                 <div className="flex justify-between items-start">
@@ -369,25 +470,10 @@ const Generate = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={handleSaveProject}
+                      onClick={() => setStep(3)}
                     >
-                      <Save className="h-4 w-4 mr-2" /> Save
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleDownloadProject}
-                      disabled={isDownloading}
-                    >
-                      <Download className="h-4 w-4 mr-2" /> 
-                      {isDownloading ? "Downloading..." : "Download"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setStep(1)}
-                    >
-                      Edit Requirements
+                      <FileCode className="h-4 w-4 mr-2" />
+                      Preview Project
                     </Button>
                   </div>
                 </div>
