@@ -25,10 +25,13 @@ export type GeneratedProject = {
 };
 
 // Hugging Face API
+// const HUGGING_FACE_API_KEY = "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";
+// const HUGGING_FACE_API_ENDPOINT = "https://api-inference.huggingface.co/models/codellama/CodeLlama-34b-Instruct-hf";
 const HUGGING_FACE_API_KEY = import.meta.env.VITE_HUGGING_FACE_API_KEY;
 const HUGGING_FACE_API_ENDPOINT = import.meta.env.VITE_HUGGING_FACE_API_ENDPOINT;
+
 const createProjectZip = async (project: GeneratedProject): Promise<string> => {
-  try { 
+  try {
     // In a real implementation, this would create a ZIP file with the project structure
     // For now, we're creating a Blob with the project data
     const projectData = JSON.stringify({
