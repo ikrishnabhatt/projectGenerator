@@ -1,18 +1,18 @@
 
 export const templateThumbnails = {
-  dashboard: "/lovable-uploads/dashboard-template.png",
-  ecommerce: "/lovable-uploads/ecommerce-template.png",
-  portfolio: "/lovable-uploads/portfolio-template.png",
-  blog: "/lovable-uploads/blog-template.png",
-  saas: "/lovable-uploads/saas-template.png",
-  mobileApp: "/lovable-uploads/mobile-app-template.png",
-  landingPage: "/lovable-uploads/landing-page-template.png",
-  adminDashboard: "/lovable-uploads/admin-dashboard.png",
-  contentBlog: "/lovable-uploads/content-blog.png",
-  analyticsApp: "/lovable-uploads/analytics-app.png",
-  ecommerceMobile: "/lovable-uploads/ecommerce-mobile.png",
-  personalPortfolio: "/lovable-uploads/personal-portfolio.png",
-  default: "/lovable-uploads/4a7b9440-eda6-4273-bebc-4a08e6ae4c26.png"
+  dashboard: "../../public/template-icons/dashboard.png",
+  ecommerce: "../../public/template-icons/ecommerce.jpg",
+  portfolio: "../../public/template-icons/portfolio.png",
+  blog: "../../public/template-icons/blog.png",
+  saas: "../../public/template-icons/saas.jpeg",
+  mobileApp: "../../public/template-icons/mobileapp.png",
+  landingPage: "../../public/template-icons/landingpage.png",
+  adminDashboard: "../../public/template-icons/admindashboard.png",
+  contentBlog: "../../public/template-icons/blog.png",
+  analyticsApp: "../../public/template-icons/another.jpg",
+  ecommerceMobile: "../../public/template-icons/mobileapp.jpg",
+  personalPortfolio: "../../public/template-icons/portfolio.png",
+  default: "../../public/template-icons/dashboard.png"
 };
 
 export const backgroundImages = {
