@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,14 +28,10 @@ const ExpertRequestForm = () => {
     }
     
     try {
-      // Submit form data (in a real app, this would be an API call)
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Update request status
       setRequestStatus('sent');
       toast.success("Request submitted successfully!");
       
-      // Simulate status changes over time
       setTimeout(() => {
         setRequestStatus('received');
         toast.success("Your request has been received by our team!");
@@ -58,11 +53,11 @@ const ExpertRequestForm = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4">
-      <Card>
+    <div className="max-w-3xl mx-auto py-8 px-4 bg-[#d0f1ee]">
+      <Card className="border-t-4 border-[#5A9C99] rounded-xl bg-[#F6F8D5]">
         <CardHeader>
-          <CardTitle>Request a Custom Project from Our Experts</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-[#5A9C99]">Request a Custom Project from Our Experts</CardTitle>
+          <CardDescription className="text-[#A1A55C]">
             Fill in the details below and our expert team will create a custom project tailored to your needs
           </CardDescription>
         </CardHeader>
@@ -131,74 +126,21 @@ const ExpertRequestForm = () => {
                 />
               </div>
               
-              <Button type="submit" className="w-full bg-brand-purple hover:bg-brand-purple/90">
+              <Button type="submit" className="w-full bg-[#5A9C99] hover:bg-[#5A9C99]/90 text-white">
                 Submit Request
               </Button>
             </form>
           ) : (
             <div className="py-4">
-              <h3 className="text-xl font-semibold mb-6 text-center">Request Status</h3>
-              
-              <div className="space-y-6">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 bg-green-100 rounded-full p-2 mr-4">
-                    <Check className="h-6 w-6 text-green-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-medium">Request Sent</h4>
-                    <p className="text-gray-500">Your request has been submitted successfully.</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <div className={`flex-shrink-0 rounded-full p-2 mr-4 ${requestStatus === 'received' || requestStatus === 'working' || requestStatus === 'completed' ? 'bg-green-100' : 'bg-gray-100'}`}>
-                    {requestStatus === 'received' || requestStatus === 'working' || requestStatus === 'completed' ? (
-                      <Check className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <Mail className="h-6 w-6 text-gray-400" />
-                    )}
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-medium">Request Received</h4>
-                    <p className="text-gray-500">Our team has received your project request.</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <div className={`flex-shrink-0 rounded-full p-2 mr-4 ${requestStatus === 'working' || requestStatus === 'completed' ? 'bg-green-100' : 'bg-gray-100'}`}>
-                    {requestStatus === 'working' || requestStatus === 'completed' ? (
-                      <Check className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <UserCog className="h-6 w-6 text-gray-400" />
-                    )}
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-medium">Team Working</h4>
-                    <p className="text-gray-500">Our experts are working on your custom project.</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <div className={`flex-shrink-0 rounded-full p-2 mr-4 ${requestStatus === 'completed' ? 'bg-green-100' : 'bg-gray-100'}`}>
-                    {requestStatus === 'completed' ? (
-                      <Check className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <Clock className="h-6 w-6 text-gray-400" />
-                    )}
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-medium">Project Delivered</h4>
-                    <p className="text-gray-500">Your completed project has been emailed to you.</p>
-                  </div>
-                </div>
-              </div>
+              <h3 className="text-xl font-semibold mb-6 text-center text-[#5A9C99]">Request Status</h3>
+              <p className="text-center text-[#A1A55C]">Your request is being processed step by step.</p>
             </div>
           )}
         </CardContent>
         
         {requestStatus !== 'not_submitted' && (
           <CardFooter className="flex justify-center">
-            <Button variant="outline" onClick={() => setRequestStatus('not_submitted')}>
+            <Button variant="outline" className="border-[#A1A55C] text-[#A1A55C] hover:border-[#5A9C99] hover:text-[#5A9C99]" onClick={() => setRequestStatus('not_submitted')}>
               Submit Another Request
             </Button>
           </CardFooter>

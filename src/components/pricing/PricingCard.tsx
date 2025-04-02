@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,11 +32,11 @@ const PricingCard: React.FC<PricingCardProps> = ({
   return (
     <Card
       className={`relative overflow-hidden ${
-        plan.isPopular ? "border-brand-purple shadow-lg" : ""
-      } ${currentPlan === plan.id ? "ring-2 ring-brand-purple" : ""}`}
+        plan.isPopular ? "border-teal-600 shadow-lg" : ""
+      } ${currentPlan === plan.id ? "ring-2 ring-teal-600" : ""}`}
     >
       {plan.isPopular && (
-        <div className="absolute top-0 right-0 bg-brand-purple text-white text-xs px-3 py-1">
+        <div className="absolute top-0 right-0 bg-teal-600 text-white text-xs px-3 py-1">
           Most Popular
         </div>
       )}
@@ -82,7 +81,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
               onClick={() => onSubscribe(plan.id)}
               className={`w-full ${
                 plan.isPopular
-                  ? "bg-brand-purple hover:bg-brand-purple/90"
+                  ? "bg-teal-600 hover:bg-teal-700"
                   : ""
               }`}
               variant={plan.isPopular ? "default" : "outline"}
@@ -95,7 +94,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
             <Button
               className={`w-full ${
                 plan.isPopular
-                  ? "bg-brand-purple hover:bg-brand-purple/90"
+                  ? "bg-teal-600 hover:bg-teal-700"
                   : ""
               }`}
               variant={plan.isPopular ? "default" : "outline"}

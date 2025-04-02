@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import Footer from "@/components/Footer";
+// import Footer from "@/components/Footer";
 import { backgroundImages } from "@/assets/template-thumbnails";
 
 const Signup = () => {
@@ -59,9 +58,9 @@ const Signup = () => {
 
   return (
     <>
-      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-purple-50 to-indigo-50">
+      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-teal-50 to-blue-50">
         <div className="absolute inset-0 z-0 opacity-20">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-indigo-500" />
+          <div className="absolute inset-0 bg-gradient-to-br from-teal-500 to-blue-500" />
           <div 
             className="absolute inset-0 bg-center bg-cover" 
             style={{ backgroundImage: `url(${backgroundImages.signup})` }}
@@ -122,7 +121,7 @@ const Signup = () => {
               </div>
               <Button
                 type="submit"
-                className="w-full bg-brand-purple hover:bg-brand-purple/90"
+                className="w-full bg-teal-600 hover:bg-teal-500"
                 disabled={loading}
               >
                 {loading ? "Creating account..." : "Create account"}
@@ -132,14 +131,14 @@ const Signup = () => {
           <CardFooter className="flex justify-center">
             <p className="text-sm text-gray-600">
               Already have an account?{" "}
-              <Link to="/login" className="text-brand-purple hover:underline">
+              <Link to="/login" className="text-teal-600 hover:underline">
                 Sign in
               </Link>
             </p>
           </CardFooter>
         </Card>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };
