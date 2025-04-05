@@ -26,7 +26,8 @@ const PopularTemplates = () => {
         } else {
           data = await getTemplatesByCategory(activeCategory);
         }
-        setTemplates(data);
+        // Only show the top 6 templates on the homepage
+        setTemplates(data.slice(0, 6));
       } catch (error) {
         console.error("Error fetching templates:", error);
       } finally {
@@ -43,6 +44,7 @@ const PopularTemplates = () => {
     
     setDownloadingId(template.id);
     try {
+      // Download the template as a ZIP file
       const downloadUrl = await downloadTemplate(template);
       
       // Create an anchor element and trigger download
@@ -67,7 +69,7 @@ const PopularTemplates = () => {
     e.stopPropagation();
     
     if (githubUrl) {
-      window.open(githubUrl, '_blank');
+      window.open(githubUrl, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -111,7 +113,7 @@ const PopularTemplates = () => {
                     <img
                       src={template.image}
                       alt={template.name}
-                      className="template-image"
+                      className="template-image h-48 w-full object-cover"
                     />
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between">

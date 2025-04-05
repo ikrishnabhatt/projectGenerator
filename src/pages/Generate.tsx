@@ -9,9 +9,9 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Download, Save, ArrowLeft, Palette, FileCode } from "lucide-react";
-import SubscriptionPrompt from "@/components/SubscriptionPrompt";
 import { useNavigate, useLocation } from "react-router-dom";
-import Footer from "@/components/Footer";
+import ProjectCustomizationForm from "@/components/ai/ProjectCustomizationForm";
+import { GeneratedProject } from "@/services/aiService";
 
 const Generate = () => {
   const { isAuthenticated, user, incrementProjectCount, checkRemainingGenerations } = useAuth();
@@ -28,11 +28,11 @@ const Generate = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
-  const [showSubscriptionPrompt, setShowSubscriptionPrompt] = useState(false);
   const [mockProjectStructure, setMockProjectStructure] = useState({
     frontend: [] as string[],
     backend: [] as string[]
   });
+  const [generatedProject, setGeneratedProject] = useState<GeneratedProject | null>(null);
 
   const themeOptions = [
     { value: "default", label: "Default (Purple/Blue)", color: "#7c3aed" },
@@ -136,7 +136,7 @@ const Generate = () => {
     const { canGenerate, remaining } = checkRemainingGenerations();
     
     if (!canGenerate) {
-      setShowSubscriptionPrompt(true);
+      toast.error("You've reached your generation limit. Please upgrade your plan.");
       return;
     }
 
@@ -180,6 +180,10 @@ const Generate = () => {
     } finally {
       setIsDownloading(false);
     }
+  };
+
+  const handleProjectGenerated = (project: GeneratedProject) => {
+    setGeneratedProject(project);
   };
 
   const mockCodeSnippets = {
@@ -274,7 +278,6 @@ app.listen(PORT, () => console.log(\`Server running on port \${PORT}\`));`
           <TabsList className="w-full mb-8">
             <TabsTrigger value="template" className="flex-1">Template Customizer</TabsTrigger>
             <TabsTrigger value="ai" className="flex-1">AI Generator</TabsTrigger>
-            <TabsTrigger value="custom-builder" className="flex-1">Customized Template Builder</TabsTrigger>
           </TabsList>
 
           <TabsContent value="template">
@@ -531,177 +534,10 @@ app.listen(PORT, () => console.log(\`Server running on port \${PORT}\`));`
           </TabsContent>
 
           <TabsContent value="ai">
-            <Card>
-              <CardHeader>
-                <CardTitle>AI Code Generator</CardTitle>
-                <CardDescription>
-                  Generate a complete project with AI based on your description
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <Label htmlFor="ai-project-name">Project Name</Label>
-                  <Input
-                    id="ai-project-name"
-                    placeholder="Enter a name for your AI-generated project"
-                  />
-                </div>
-                <div className="space-y-4">
-                  <Label htmlFor="ai-project-description">Project Description</Label>
-                  <textarea
-                    id="ai-project-description"
-                    className="min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm"
-                    placeholder="Describe your project in detail. Include features, pages, functionality, and design preferences."
-                  ></textarea>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Frontend Framework</Label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="flex items-center space-x-2 rounded-md border p-3">
-                        <input type="radio" name="frontend" id="react" defaultChecked />
-                        <Label htmlFor="react" className="cursor-pointer">React</Label>
-                      </div>
-                      <div className="flex items-center space-x-2 rounded-md border p-3">
-                        <input type="radio" name="frontend" id="vue" disabled />
-                        <Label htmlFor="vue" className="cursor-pointer opacity-50">Vue (Coming Soon)</Label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Backend Type</Label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="flex items-center space-x-2 rounded-md border p-3">
-                        <input type="radio" name="backend" id="rest" defaultChecked />
-                        <Label htmlFor="rest" className="cursor-pointer">REST API</Label>
-                      </div>
-                      <div className="flex items-center space-x-2 rounded-md border p-3">
-                        <input type="radio" name="backend" id="graphql" disabled />
-                        <Label htmlFor="graphql" className="cursor-pointer opacity-50">GraphQL (Coming Soon)</Label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-end">
-                <Button
-                  onClick={() => toast.info("AI Generation coming soon in full functionality!")}
-                  className="bg-brand-purple hover:bg-brand-purple/90"
-                >
-                  Generate Project
-                </Button>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="custom-builder">
-            <Card>
-              <CardHeader>
-                <CardTitle>Customized Template Builder</CardTitle>
-                <CardDescription>
-                  Quickly customize and download pre-built templates
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {Object.entries({
-                    dashboard: "Dashboard",
-                    ecommerce: "E-commerce Store",
-                    blog: "Content Blog",
-                    portfolio: "Portfolio Site",
-                    landingPage: "Landing Page",
-                    adminDashboard: "Admin Dashboard"
-                  }).map(([key, name]) => (
-                    <div 
-                      key={key}
-                      onClick={() => {
-                        setSelectedTemplateId(key);
-                        toast.success(`${name} template selected`);
-                      }}
-                      className="relative cursor-pointer rounded-lg border-2 transition-all hover:shadow-md overflow-hidden group"
-                    >
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors z-10"></div>
-                      <img 
-                        src={`/lovable-uploads/${key}-template.png`} 
-                        alt={name}
-                        className="w-full aspect-video object-cover"
-                      />
-                      <div className="p-3 border-t">
-                        <h3 className="font-medium">{name}</h3>
-                        <p className="text-xs text-gray-500">Click to select</p>
-                      </div>
-                      {selectedTemplateId === key && (
-                        <div className="absolute top-2 right-2 bg-brand-purple text-white text-xs px-2 py-1 rounded-full z-20">
-                          Selected
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {selectedTemplateId && (
-                  <>
-                    <div className="border-t border-gray-200 pt-6 mt-6">
-                      <h3 className="text-lg font-medium mb-4">Customize Your Template</h3>
-                      
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="custom-project-name">Project Name</Label>
-                          <Input
-                            id="custom-project-name"
-                            value={projectName}
-                            onChange={(e) => setProjectName(e.target.value)}
-                            placeholder="Enter a name for your project"
-                          />
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label>Theme Color</Label>
-                          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                            {themeOptions.map((theme) => (
-                              <div 
-                                key={theme.value}
-                                className={`p-2 border rounded-md cursor-pointer transition-all ${
-                                  projectTheme === theme.value ? 'border-2 border-brand-purple' : 'border-gray-200 hover:border-gray-300'
-                                }`}
-                                onClick={() => setProjectTheme(theme.value)}
-                              >
-                                <div 
-                                  className="w-full h-4 rounded-full mb-2"
-                                  style={{ backgroundColor: theme.color }}
-                                ></div>
-                                <p className="text-xs text-center truncate">{theme.label}</p>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-end pt-4">
-                      <Button
-                        onClick={handleDownloadProject}
-                        disabled={isDownloading}
-                        className="bg-brand-purple hover:bg-brand-purple/90"
-                      >
-                        <Download className="h-4 w-4 mr-2" /> 
-                        {isDownloading ? "Downloading..." : "Generate & Download"}
-                      </Button>
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
+            <ProjectCustomizationForm onGenerated={handleProjectGenerated} />
           </TabsContent>
         </Tabs>
       </div>
-      
-      <SubscriptionPrompt 
-        open={showSubscriptionPrompt} 
-        onClose={() => setShowSubscriptionPrompt(false)} 
-      />
-      
-      <Footer />
     </div>
   );
 };

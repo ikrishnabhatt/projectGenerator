@@ -45,6 +45,7 @@ const TemplateDetail = () => {
       return;
     }
     
+    navigate(`/generate?template=${id}`);
     toast.success("Template selected! You can now customize it.");
   };
 
