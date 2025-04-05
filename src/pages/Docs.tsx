@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { backgroundImages } from "@/assets/template-thumbnails";
-import Footer from "@/components/Footer";
+// import Footer from "@/components/Footer";
 
 const Docs = () => {
   return (
@@ -177,7 +177,7 @@ const Docs = () => {
           </Tabs>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

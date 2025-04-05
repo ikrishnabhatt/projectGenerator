@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { getAllTemplates, getTemplatesByCategory, Template, downloadTemplate } from "@/services/templateService";
 import { Button } from "@/components/ui/button";
@@ -114,7 +113,7 @@ const Templates = () => {
                   variant={activeCategory === category ? "default" : "outline"}
                   size="sm"
                   onClick={() => setActiveCategory(category)}
-                  className={activeCategory === category ? "bg-brand-purple hover:bg-brand-purple/90" : ""}
+                  className={activeCategory === category ? "bg-teal-600 hover:bg-teal-700" : ""}
                 >
                   {category}
                 </Button>
@@ -175,37 +174,6 @@ const Templates = () => {
                       <span className="text-xs font-medium px-2 py-1 bg-gray-100 rounded-full">
                         {template.category}
                       </span>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {template.techStack.map((tech) => (
-                        <span
-                          key={tech}
-                          className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="flex justify-between mt-4">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={(e) => handleDownload(template, e)}
-                        disabled={downloadingId === template.id}
-                      >
-                        <Download className="h-4 w-4 mr-1" />
-                        {downloadingId === template.id ? "Downloading..." : "Download"}
-                      </Button>
-                      {template.githubUrl && (
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={(e) => handleOpenGithub(template.githubUrl, e)}
-                        >
-                          <ExternalLink className="h-4 w-4 mr-1" />
-                          GitHub
-                        </Button>
-                      )}
                     </div>
                   </CardContent>
                 </Card>

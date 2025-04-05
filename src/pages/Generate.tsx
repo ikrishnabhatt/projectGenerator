@@ -12,6 +12,7 @@ import { Download, Save, ArrowLeft, Palette, FileCode } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ProjectCustomizationForm from "@/components/ai/ProjectCustomizationForm";
 import { GeneratedProject } from "@/services/aiService";
+// import Footer from "@/components/Footer";
 
 const Generate = () => {
   const { isAuthenticated, user, incrementProjectCount, checkRemainingGenerations } = useAuth();
@@ -332,14 +333,15 @@ app.listen(PORT, () => console.log(\`Server running on port \${PORT}\`));`
                     </div>
                   ) : (
                     <div className="text-center p-8">
-                      <p className="mb-4">Please select a template from the templates page first.</p>
-                      <Button
-                        onClick={() => navigate('/templates')}
-                        className="bg-brand-purple hover:bg-brand-purple/90"
-                      >
-                        Browse Templates
-                      </Button>
-                    </div>
+  <p className="mb-4">Please select a template from the templates page first.</p>
+  <Button
+    onClick={() => navigate('/templates')}
+    className="bg-teal-600 hover:bg-teal-700"
+  >
+    Browse Templates
+  </Button>
+</div>
+
                   )}
                 </CardContent>
                 <CardFooter className="flex justify-end space-x-2">

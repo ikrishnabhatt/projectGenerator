@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,6 @@ const Login = () => {
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
 
-  // Redirect if already logged in
   React.useEffect(() => {
     if (isAuthenticated) {
       navigate('/');
@@ -39,7 +37,6 @@ const Login = () => {
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);
-      // Error is already handled in the auth context
     } finally {
       setLoading(false);
     }
@@ -47,16 +44,16 @@ const Login = () => {
 
   return (
     <>
-      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-purple-50 to-indigo-50">
-        <div className="absolute inset-0 z-0 opacity-20">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-indigo-500" />
+      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-teal-50 to-blue-50">
+        <div className="absolute inset-0 z-0 opacity-10">
+          <div className="absolute inset-0 bg-gradient-to-br from-teal-400 to-blue-400" />
           <div 
             className="absolute inset-0 bg-center bg-cover" 
             style={{ backgroundImage: `url(${backgroundImages.login})` }}
           />
         </div>
         
-        <Card className="w-full max-w-md relative z-10 shadow-xl">
+        <Card className="w-full max-w-md relative z-10 shadow-lg">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">Sign in to your account</CardTitle>
             <CardDescription className="text-center">
@@ -81,7 +78,7 @@ const Login = () => {
                   <Label htmlFor="password">Password</Label>
                   <Link
                     to="/forgot-password"
-                    className="text-xs text-brand-purple hover:underline"
+                    className="text-xs text-teal-600 hover:underline"
                   >
                     Forgot password?
                   </Link>
@@ -97,14 +94,13 @@ const Login = () => {
               </div>
               <Button
                 type="submit"
-                className="w-full bg-brand-purple hover:bg-brand-purple/90"
+                className="w-full bg-teal-600 hover:bg-teal-500"
                 disabled={loading}
               >
                 {loading ? "Signing in..." : "Sign in"}
               </Button>
             </form>
             
-            {/* Demo credentials for testing */}
             <div className="mt-4 p-3 bg-gray-50 rounded-md text-xs text-gray-600">
               <p className="font-semibold mb-1">Demo credentials:</p>
               <p>Email: demo@example.com</p>
@@ -114,14 +110,14 @@ const Login = () => {
           <CardFooter className="flex justify-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
-              <Link to="/signup" className="text-brand-purple hover:underline">
+              <Link to="/signup" className="text-teal-600 hover:underline">
                 Sign up
               </Link>
             </p>
           </CardFooter>
         </Card>
       </div>
-      <Footer />
+      
     </>
   );
 };

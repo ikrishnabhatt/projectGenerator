@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -16,7 +15,7 @@ const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const isActive = (path: string) => {
+  const isActive = (path) => {
     return location.pathname === path;
   };
 
@@ -26,73 +25,45 @@ const Navbar = () => {
   };
 
   return (
-    <header className="w-full bg-white border-b border-gray-100 sticky top-0 z-50">
+    <header className="w-full bg-[#d1fffb] border-b border-[#5A9C99] sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
             <Link 
               to="/" 
-              className="flex items-center text-brand-purple font-bold text-xl"
+              className="flex items-center font-bold text-xl"
+              style={{ color: "#006A71" }} 
             >
-              <img src="/thynk-ai-logo.svg" alt="Thynk AI" className="h-8 w-8 mr-2" />
-              Thynk AI
             </Link>
           </div>
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link
-              to="/templates"
-              className={`text-sm font-medium ${
-                isActive("/templates")
-                  ? "text-brand-purple"
-                  : "text-gray-600 hover:text-brand-purple"
-              } transition-colors`}
-            >
-              Templates
-            </Link>
-            <Link
-              to="/generate"
-              className={`text-sm font-medium ${
-                isActive("/generate")
-                  ? "text-brand-purple"
-                  : "text-gray-600 hover:text-brand-purple"
-              } transition-colors`}
-            >
-              AI Generation
-            </Link>
-            <Link
-              to="/docs"
-              className={`text-sm font-medium ${
-                isActive("/docs")
-                  ? "text-brand-purple"
-                  : "text-gray-600 hover:text-brand-purple"
-              } transition-colors`}
-            >
-              Docs
-            </Link>
-            <Link
-              to="/pricing"
-              className={`text-sm font-medium ${
-                isActive("/pricing")
-                  ? "text-brand-purple"
-                  : "text-gray-600 hover:text-brand-purple"
-              } transition-colors`}
-            >
-              Pricing
-            </Link>
+            {["/templates", "/generate", "/docs", "/pricing"].map((path) => (
+              <Link
+                key={path}
+                to={path}
+                className={`text-sm font-medium ${
+                  isActive(path)
+                    ? "text-[#006A71] font-semibold"
+                    : "text-[#5A9C99] hover:text-[#006A71]"
+                } transition-colors`}
+              >
+                {path.replace("/", "").charAt(0).toUpperCase() + path.slice(2)}
+              </Link>
+            ))}
           </nav>
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-700 font-bold">Hi, {user?.name}</span>
+                <span className="text-sm text-[#006A71] font-bold">Hi, {user?.name}</span>
                 <Button
                   variant="outline"
                   onClick={handleLogout}
-                  className="text-sm bg-black text-white hover:bg-black/80"
+                  className="text-sm bg-[#5A9C99] text-white hover:bg-[#5A9C99]/90"
                 >
                   Logout
                 </Button>
@@ -100,17 +71,14 @@ const Navbar = () => {
             ) : (
               <>
                 <Link to="/login">
-                  <Button
-                    variant="ghost"
-                    className="text-sm"
-                  >
+                  <Button variant="ghost" className="text-sm text-[#5A9C99] hover:text-[#006A71]">
                     Login
                   </Button>
                 </Link>
                 <Link to="/signup">
                   <Button
                     variant="default"
-                    className="text-sm bg-brand-purple hover:bg-brand-purple/90"
+                    className="text-sm bg-[#006A71] hover:bg-[#006A71]/90 text-white"
                   >
                     Signup
                   </Button>
@@ -124,43 +92,25 @@ const Navbar = () => {
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <Menu />
+                  <Menu className="text-[#5A9C99]" />
                 </Button>
               </SheetTrigger>
-              <SheetContent>
+              <SheetContent className="bg-[#F6F8D5]">
                 <div className="flex flex-col mt-8 space-y-4">
-                  <Link
-                    to="/templates"
-                    className="text-lg font-medium text-gray-700 hover:text-brand-purple transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Templates
-                  </Link>
-                  <Link
-                    to="/generate"
-                    className="text-lg font-medium text-gray-700 hover:text-brand-purple transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    AI Generation
-                  </Link>
-                  <Link
-                    to="/docs"
-                    className="text-lg font-medium text-gray-700 hover:text-brand-purple transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Docs
-                  </Link>
-                  <Link
-                    to="/pricing"
-                    className="text-lg font-medium text-gray-700 hover:text-brand-purple transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Pricing
-                  </Link>
-                  <div className="pt-4 border-t border-gray-200">
+                  {["/templates", "/generate", "/docs", "/pricing"].map((path) => (
+                    <Link
+                      key={path}
+                      to={path}
+                      className="text-lg font-medium text-[#5A9C99] hover:text-[#006A71] transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {path.replace("/", "").charAt(0).toUpperCase() + path.slice(2)}
+                    </Link>
+                  ))}
+                  <div className="pt-4 border-t border-[#A1A55C]">
                     {isAuthenticated ? (
                       <div className="flex flex-col space-y-4">
-                        <span className="text-sm text-gray-700 font-bold">Hi, {user?.name}</span>
+                        <span className="text-sm text-[#5A9C99] font-bold">Hi, {user?.name}</span>
                         <Button
                           variant="outline"
                           onClick={() => {
@@ -168,7 +118,7 @@ const Navbar = () => {
                             setIsMobileMenuOpen(false);
                             navigate("/");
                           }}
-                          className="bg-black text-white hover:bg-black/80"
+                          className="bg-[#5A9C99] text-white hover:bg-[#5A9C99]/90"
                         >
                           Logout
                         </Button>
@@ -176,17 +126,14 @@ const Navbar = () => {
                     ) : (
                       <div className="flex flex-col space-y-4">
                         <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                          <Button
-                            variant="outline"
-                            className="w-full"
-                          >
+                          <Button variant="outline" className="w-full text-[#5A9C99] hover:text-[#006A71]">
                             Login
                           </Button>
                         </Link>
                         <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
                           <Button
                             variant="default"
-                            className="w-full bg-brand-purple hover:bg-brand-purple/90"
+                            className="w-full bg-[#006A71] hover:bg-[#006A71]/90 text-white"
                           >
                             Signup
                           </Button>
