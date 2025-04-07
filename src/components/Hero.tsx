@@ -6,8 +6,8 @@ import { Link } from "react-router-dom";
 const Hero = () => {
   return (
     <section className="relative py-20 md:py-28 overflow-hidden">
-      {/* Pure white background */}
-      <div className="absolute inset-0 z-0 bg-white dark:bg-black"></div>
+      {/* Gradient background */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-br from-white via-blue-50 to-purple-50"></div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
@@ -15,7 +15,9 @@ const Hero = () => {
             <span className="bg-gradient-to-r from-purple-600 via-pink-500 to-teal-500 text-transparent bg-clip-text">
               Build Complete Projects
             </span>{" "}
-            Instantly
+            <span className="bg-gradient-to-r from-blue-500 via-violet-500 to-indigo-500 text-transparent bg-clip-text">
+              Instantly
+            </span>
           </h1>
           <p className="mt-6 text-xl text-foreground animate-fade-in" style={{ animationDelay: "0.1s" }}>
             Choose your preferred creation method and get a ready-to-use project with both

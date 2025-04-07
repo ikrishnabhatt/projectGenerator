@@ -1,3 +1,4 @@
+
 import React from "react";
 import Hero from "@/components/Hero";
 import FeatureCards from "@/components/FeatureCards";
@@ -12,11 +13,19 @@ const Index = () => {
   return (
     <div>
       <Hero />
-      <FeatureCards />
-      <PopularTemplates />
+      
+      {/* Feature Cards with gradient background */}
+      <section className="py-16 bg-gradient-to-br from-teal-50 via-blue-50 to-cyan-50">
+        <FeatureCards />
+      </section>
+      
+      {/* Popular Templates with gradient background */}
+      <section className="py-16 bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50">
+        <PopularTemplates />
+      </section>
       
       {/* Create with Experts Section */}
-      <section className="py-16 bg-[#F6F8D5]">
+      <section className="py-16 bg-gradient-to-br from-amber-50 via-yellow-50 to-lime-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
@@ -26,7 +35,7 @@ const Index = () => {
               </p>
             </div>
             
-            <Card className="border-[#5A9C99]/30">
+            <Card className="border-[#5A9C99]/30 shadow-lg hover:shadow-xl transition-all duration-300">
               <CardHeader>
                 <CardTitle className="text-[#5A9C99]">Expert-Crafted Projects</CardTitle>
                 <CardDescription className="text-[#5A9C99]">
@@ -65,7 +74,7 @@ const Index = () => {
       </section>
       
       {/* Pricing Section Preview */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
@@ -76,7 +85,7 @@ const Index = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <Card>
+              <Card className="hover:shadow-lg transition-all duration-300">
                 <CardHeader>
                   <CardTitle className="text-[#5A9C99]">Free</CardTitle>
                   <div className="mt-4 flex items-end">
@@ -102,7 +111,7 @@ const Index = () => {
                 </CardFooter>
               </Card>
               
-              <Card className="border-[#5A9C99] shadow-lg">
+              <Card className="border-[#5A9C99] shadow-lg hover:shadow-xl transition-all duration-300">
                 <div className="absolute top-0 right-0 bg-[#5A9C99] text-white text-xs px-3 py-1">
                   Popular
                 </div>
@@ -131,12 +140,37 @@ const Index = () => {
                   </Link>
                 </CardFooter>
               </Card>
+              
+              <Card className="hover:shadow-lg transition-all duration-300">
+                <CardHeader>
+                  <CardTitle className="text-[#5A9C99]">Enterprise</CardTitle>
+                  <div className="mt-4 flex items-end">
+                    <span className="text-4xl font-bold flex items-center text-[#5A9C99]">
+                      <IndianRupee className="h-6 w-6 mb-1" />
+                      4,999
+                    </span>
+                    <span className="text-gray-500 ml-2">
+                      /month
+                    </span>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <PlanFeatureList features={[
+                    "Unlimited everything",
+                    "Custom integrations",
+                    "Dedicated support"
+                  ]} />
+                </CardContent>
+                <CardFooter>
+                  <Link to="/pricing" className="w-full">
+                    <Button variant="outline" className="w-full border-[#5A9C99] text-[#5A9C99] hover:border-[#F6F8D5] hover:text-[#787c25]">Contact Sales</Button>
+                  </Link>
+                </CardFooter>
+              </Card>
             </div>
           </div>
         </div>
       </section>
-      
-      {/* Removed the duplicate Footer component */}
     </div>
   );
 };

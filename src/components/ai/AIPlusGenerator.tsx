@@ -15,6 +15,7 @@ const AIPlusGenerator: React.FC = () => {
   const [generatedCode, setGeneratedCode] = useState<{html?: string; css?: string; js?: string} | null>(null);
   const [activeTab, setActiveTab] = useState("html");
   const { user, updateCredits } = useAuth();
+  const [modelStatus, setModelStatus] = useState("");
   
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -38,7 +39,9 @@ const AIPlusGenerator: React.FC = () => {
 
     try {
       setGenerating(true);
+      setModelStatus("Loading AI model...");
       
+      // Use the updated AI generation service
       const result = await generateWithAI(prompt);
       
       // If not superuser or PRO, deduct credits
@@ -65,6 +68,7 @@ const AIPlusGenerator: React.FC = () => {
         variant: "destructive",
       });
     } finally {
+      setModelStatus("");
       setGenerating(false);
     }
   };
@@ -91,24 +95,33 @@ const AIPlusGenerator: React.FC = () => {
               onChange={(e) => setPrompt(e.target.value)}
             />
             
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
-                {!user?.isPro && !user?.isSuperUser && (
-                  <>Your available credits: <span className="font-semibold">{user?.credits || 0}</span></>
-                )}
-                {(user?.isPro || user?.isSuperUser) && (
-                  <span className="text-green-500 font-semibold">Unlimited generations (PRO)</span>
-                )}
-              </p>
+            <div className="flex flex-col space-y-2">
+              {modelStatus && (
+                <div className="text-sm text-blue-500">
+                  <Loader2 className="inline mr-2 h-4 w-4 animate-spin" />
+                  {modelStatus}
+                </div>
+              )}
               
-              <Button 
-                onClick={handleGenerate} 
-                disabled={generating || !prompt.trim()} 
-                className="ml-auto"
-              >
-                {generating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {generating ? "Generating..." : "Generate Project"}
-              </Button>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">
+                  {!user?.isPro && !user?.isSuperUser && (
+                    <>Your available credits: <span className="font-semibold">{user?.credits || 0}</span></>
+                  )}
+                  {(user?.isPro || user?.isSuperUser) && (
+                    <span className="text-green-500 font-semibold">Unlimited generations (PRO)</span>
+                  )}
+                </p>
+                
+                <Button 
+                  onClick={handleGenerate} 
+                  disabled={generating || !prompt.trim()} 
+                  className="ml-auto"
+                >
+                  {generating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {generating ? "Generating..." : "Generate Project"}
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>

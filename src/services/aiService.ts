@@ -1,6 +1,7 @@
 
 import { generateProjectCss } from "./cssGenerationService";
 import { enhanceContent } from "./aiServiceEnhancer";
+import { pipeline } from "@huggingface/transformers";
 
 export interface ProjectRequirement {
   projectName: string;
@@ -26,6 +27,30 @@ export interface GeneratedProject {
     backend?: string;
   };
   techStack: string[];
+}
+
+// Model cache
+let textGenerationModel = null;
+
+async function loadModel() {
+  try {
+    if (!textGenerationModel) {
+      // Use Hugging Face Transformers.js to load an open-source model
+      // This will use a smaller model that can run in the browser
+      textGenerationModel = await pipeline(
+        "text-generation",
+        "TinyLlama/TinyLlama-1.1B-Chat-v1.0", // Using a small open-source LLM
+        { 
+          // Remove the quantized property as it's not recognized in the type definition
+          max_new_tokens: 2048 // Maximum generated tokens
+        }
+      );
+    }
+    return textGenerationModel;
+  } catch (error) {
+    console.error("Error loading model:", error);
+    throw new Error("Failed to load AI model. Falling back to template-based generation.");
+  }
 }
 
 export const generateProject = async (requirements: ProjectRequirement): Promise<GeneratedProject> => {
@@ -146,8 +171,9 @@ export const downloadProject = async (project: GeneratedProject): Promise<string
   return url;
 };
 
-export const generateWithAI = async (prompt: string): Promise<{html?: string; css?: string; js?: string}> => {
-  await new Promise(resolve => setTimeout(resolve, 3000));
+// Default template-based generation as fallback
+const generateWithTemplate = async (prompt: string): Promise<{html?: string; css?: string; js?: string}> => {
+  await new Promise(resolve => setTimeout(resolve, 1500));
   
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -397,4 +423,80 @@ document.addEventListener('DOMContentLoaded', function() {
 });`;
 
   return { html, css, js };
+};
+
+// AI generation using open-source model
+export const generateWithAI = async (prompt: string): Promise<{html?: string; css?: string; js?: string}> => {
+  try {
+    // Try to load and use the AI model
+    const model = await loadModel();
+    
+    // Create a prompt for HTML generation
+    const htmlPrompt = `
+Generate a complete HTML file for a web project based on this description: "${prompt}"
+The HTML should include proper structure with semantic HTML5 tags.
+Do not include any explanations, only output valid HTML code that would go in an index.html file.
+`;
+
+    // Generate HTML using the model
+    const htmlResult = await model(htmlPrompt, {
+      max_new_tokens: 2048,
+      temperature: 0.7,
+      repetition_penalty: 1.1
+    });
+    
+    // Extract HTML from result
+    let htmlCode = htmlResult[0].generated_text;
+    // Clean up the HTML (remove any non-HTML content before and after the actual code)
+    htmlCode = htmlCode.substring(htmlCode.indexOf("<!DOCTYPE") >= 0 ? htmlCode.indexOf("<!DOCTYPE") : 0);
+    
+    // Create a prompt for CSS generation
+    const cssPrompt = `
+Generate CSS styles for a web project with this description: "${prompt}"
+The CSS should be modern, responsive, and include media queries.
+Only output valid CSS code, no explanations.
+`;
+
+    // Generate CSS using the model
+    const cssResult = await model(cssPrompt, {
+      max_new_tokens: 2048,
+      temperature: 0.7
+    });
+    
+    // Extract CSS from result
+    let cssCode = cssResult[0].generated_text;
+    // Clean up the CSS (remove any non-CSS content before and after the actual code)
+    cssCode = cssCode.substring(cssCode.indexOf("/*") >= 0 ? cssCode.indexOf("/*") : 0);
+    
+    // Create a prompt for JavaScript generation
+    const jsPrompt = `
+Generate JavaScript code for a web project with this description: "${prompt}"
+The JavaScript should include event listeners, DOM manipulation, and basic interactions.
+Only output valid JavaScript code, no explanations.
+`;
+
+    // Generate JavaScript using the model
+    const jsResult = await model(jsPrompt, {
+      max_new_tokens: 1536,
+      temperature: 0.7
+    });
+    
+    // Extract JavaScript from result
+    let jsCode = jsResult[0].generated_text;
+    // Clean up the JavaScript
+    jsCode = jsCode.substring(jsCode.indexOf("//") >= 0 ? jsCode.indexOf("//") : 0);
+    
+    // Return the generated code
+    return {
+      html: htmlCode || "<!-- No HTML content was generated -->",
+      css: cssCode || "/* No CSS content was generated */",
+      js: jsCode || "// No JavaScript content was generated"
+    };
+  } catch (error) {
+    console.error("AI Generation error:", error);
+    
+    // Fall back to template-based generation
+    console.log("Falling back to template-based generation");
+    return generateWithTemplate(prompt);
+  }
 };
