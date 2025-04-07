@@ -9,12 +9,14 @@ import CustomPlanSection from "@/components/pricing/CustomPlanSection";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, ZapIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Pricing = () => {
   const [interval, setInterval] = useState<"month" | "year">("month");
   const [plans, setPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -37,28 +39,29 @@ const Pricing = () => {
       return;
     }
     
-    // This would normally redirect to a payment page or process
-    toast.success(`Subscribing to ${planId} plan`);
+    // Redirect to payment checkout with plan parameter
+    navigate(`/payment-checkout?plan=${planId}`);
   };
 
-  const handleTopUp = () => {
+  const handleTopUp = (option: string) => {
     if (!isAuthenticated) {
       toast.error("Please login to top up AI credits");
       return;
     }
     
-    toast.success("Redirecting to AI credits top-up page");
+    // Redirect to payment checkout with topup parameters
+    navigate(`/payment-checkout?type=topup&option=${option}`);
   };
 
   const getCurrentPlan = () => {
     if (!isAuthenticated || !user) return null;
-    return user.subscriptionTier;
+    return user.isPro ? "pro" : "free";
   };
 
   const currentPlan = getCurrentPlan();
 
   return (
-    <div className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 min-h-[calc(100vh-64px)]">
+    <div className="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-black min-h-[calc(100vh-64px)]">
       <div className="max-w-6xl mx-auto">
         <PricingHeader interval={interval} setInterval={setInterval} />
         
@@ -76,8 +79,8 @@ const Pricing = () => {
           <Card className="border-orange-300 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <div className="bg-orange-100 p-2 rounded-full">
-                  <PlusCircle className="h-5 w-5 text-orange-500" />
+                <div className="bg-orange-100 dark:bg-orange-900 p-2 rounded-full">
+                  <PlusCircle className="h-5 w-5 text-orange-500 dark:text-orange-300" />
                 </div>
                 AI Credits Top-up
               </CardTitle>
@@ -87,25 +90,38 @@ const Pricing = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-4 bg-white rounded-lg border border-gray-200 text-center">
+                <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-center">
                   <p className="text-xl font-semibold">₹299</p>
-                  <p className="text-gray-600">10 AI Generations</p>
+                  <p className="text-gray-600 dark:text-gray-300">10 AI Generations</p>
+                  <Button 
+                    onClick={() => handleTopUp("1")} 
+                    className="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white"
+                  >
+                    Select
+                  </Button>
                 </div>
-                <div className="p-4 bg-white rounded-lg border border-gray-200 text-center">
+                <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-center">
                   <p className="text-xl font-semibold">₹499</p>
-                  <p className="text-gray-600">20 AI Generations</p>
+                  <p className="text-gray-600 dark:text-gray-300">20 AI Generations</p>
+                  <Button 
+                    onClick={() => handleTopUp("2")} 
+                    className="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white"
+                  >
+                    Select
+                  </Button>
                 </div>
-                <div className="p-4 bg-white rounded-lg border border-gray-200 text-center">
+                <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-center">
                   <p className="text-xl font-semibold">₹899</p>
-                  <p className="text-gray-600">50 AI Generations</p>
+                  <p className="text-gray-600 dark:text-gray-300">50 AI Generations</p>
+                  <Button 
+                    onClick={() => handleTopUp("3")} 
+                    className="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white"
+                  >
+                    Select
+                  </Button>
                 </div>
               </div>
             </CardContent>
-            <CardFooter>
-              <Button onClick={handleTopUp} className="w-full bg-orange-500 hover:bg-orange-600 text-white">
-                Top Up AI Credits
-              </Button>
-            </CardFooter>
           </Card>
         </div>
 

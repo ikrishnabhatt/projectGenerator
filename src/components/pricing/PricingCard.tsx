@@ -1,10 +1,12 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { IndianRupee } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PricingPlan } from "@/services/pricingService";
 import PlanFeatureList from "./PlanFeatureList";
+import { toast } from "sonner";
 
 interface PricingCardProps {
   plan: PricingPlan;
@@ -21,12 +23,30 @@ const PricingCard: React.FC<PricingCardProps> = ({
   currentPlan, 
   onSubscribe 
 }) => {
+  const navigate = useNavigate();
+  
   const getAdjustedPrice = (price: number): number => {
     if (interval === "year") {
       // Apply 20% discount for yearly billing
       return Math.round(price * 12 * 0.8);
     }
     return price;
+  };
+  
+  const handleSubscription = () => {
+    if (plan.id === "free") {
+      toast.success("You're already on the Free plan!");
+      return;
+    }
+    
+    if (isAuthenticated) {
+      // Redirect to checkout page with plan parameter
+      navigate(`/payment-checkout?plan=${plan.id}`);
+    } else {
+      // Redirect to login first
+      toast.error("Please login to subscribe to a plan");
+      navigate('/login');
+    }
   };
 
   return (
@@ -78,7 +98,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
             </Button>
           ) : (
             <Button
-              onClick={() => onSubscribe(plan.id)}
+              onClick={handleSubscription}
               className={`w-full ${
                 plan.isPopular
                   ? "bg-teal-600 hover:bg-teal-700"
@@ -90,18 +110,17 @@ const PricingCard: React.FC<PricingCardProps> = ({
             </Button>
           )
         ) : (
-          <Link to="/login" className="w-full">
-            <Button
-              className={`w-full ${
-                plan.isPopular
-                  ? "bg-teal-600 hover:bg-teal-700"
-                  : ""
-              }`}
-              variant={plan.isPopular ? "default" : "outline"}
-            >
-              Login to Subscribe
-            </Button>
-          </Link>
+          <Button
+            className={`w-full ${
+              plan.isPopular
+                ? "bg-teal-600 hover:bg-teal-700"
+                : ""
+            }`}
+            variant={plan.isPopular ? "default" : "outline"}
+            onClick={handleSubscription}
+          >
+            Login to Subscribe
+          </Button>
         )}
       </CardFooter>
     </Card>

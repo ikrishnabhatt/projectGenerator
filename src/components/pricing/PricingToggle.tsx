@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 
@@ -9,12 +10,12 @@ interface PricingToggleProps {
 const PricingToggle: React.FC<PricingToggleProps> = ({ interval, setInterval }) => {
   return (
     <div className="flex items-center justify-center mt-8">
-      <div className="bg-white p-1 rounded-full flex">
+      <div className="bg-background p-1 rounded-full flex border">
         <Button
           variant={interval === "month" ? "default" : "ghost"}
           size="sm"
           onClick={() => setInterval("month")}
-          className={interval === "month" ? "bg-teal-600 hover:bg-teal-500" : ""}
+          className={interval === "month" ? "" : ""}
         >
           Monthly
         </Button>
@@ -22,10 +23,10 @@ const PricingToggle: React.FC<PricingToggleProps> = ({ interval, setInterval }) 
           variant={interval === "year" ? "default" : "ghost"}
           size="sm"
           onClick={() => setInterval("year")}
-          className={interval === "year" ? "bg-teal-600 hover:bg-teal-500" : ""}
+          className={interval === "year" ? "" : ""}
         >
           Yearly
-          <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
+          <span className="ml-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 text-xs px-2 py-0.5 rounded-full">
             Save 20%
           </span>
         </Button>

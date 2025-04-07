@@ -1,196 +1,159 @@
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import authService, { LoginCredentials, RegisterData } from "@/services/authService";
 import { toast } from "sonner";
 
-type SubscriptionTier = 'free' | 'pro' | 'team';
-
-type User = {
+// Define the shape of user object
+export interface User {
   id: string;
-  email: string;
   name: string;
-  points: number;
-  projectsGenerated: number;
-  subscriptionTier: SubscriptionTier;
-  subscriptionActive: boolean;
-} | null;
+  email: string;
+  credits: number;
+  isPro: boolean;
+  isSuperUser?: boolean;
+}
 
-type AuthContextType = {
-  user: User;
-  isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, name: string, password: string) => Promise<void>;
-  logout: () => void;
+// Define the shape of auth context
+interface AuthContextType {
+  user: User | null;
   isAuthenticated: boolean;
-  updateUserPoints: (newPoints: number) => void;
-  incrementProjectCount: () => void;
-  checkRemainingGenerations: () => { canGenerate: boolean, remaining: number };
-};
+  isLoading: boolean;
+  login: (credentials: LoginCredentials) => Promise<boolean>;
+  register: (userData: RegisterData) => Promise<boolean>;
+  signup: (name: string, email: string, password: string) => Promise<boolean>;
+  logout: () => void;
+  updateCredits: (newCredits: number) => void;
+  upgradeToPro: () => void;
+}
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Create the context
+export const AuthContext = createContext<AuthContextType>({
+  user: null,
+  isAuthenticated: false,
+  isLoading: true,
+  login: async () => false,
+  register: async () => false,
+  signup: async () => false,
+  logout: () => {},
+  updateCredits: () => {},
+  upgradeToPro: () => {},
+});
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
-
-// Simulated user database for demo purposes
-const mockUsers = [
-  {
-    id: "user-123",
-    email: "demo@example.com",
-    password: "password123",
-    name: "Demo User",
-    points: 3,
-    projectsGenerated: 0,
-    subscriptionTier: 'free' as SubscriptionTier,
-    subscriptionActive: true
-  },
-  {
-    id: "user-456",
-    email: "admin@example.com",
-    password: "admin123",
-    name: "Admin User",
-    points: 10,
-    projectsGenerated: 2,
-    subscriptionTier: 'pro' as SubscriptionTier,
-    subscriptionActive: true
-  }
-];
-
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
-  children 
-}) => {
-  const [user, setUser] = useState<User>(null);
+// Auth provider component
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Check for existing session on mount
   useEffect(() => {
-    // Check if user is stored in localStorage
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    const initializeAuth = async () => {
+      setIsLoading(true);
+      try {
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+          setUser(currentUser as User);
+        }
+      } catch (error) {
+        console.error("Auth initialization error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeAuth();
   }, []);
 
-  const login = async (email: string, password: string) => {
-    setIsLoading(true);
+  // Login handler
+  const login = async (credentials: LoginCredentials): Promise<boolean> => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      setIsLoading(true);
+      const response = await authService.login(credentials);
       
-      // Check for existing user (demo authentication)
-      const foundUser = mockUsers.find(
-        u => u.email.toLowerCase() === email.toLowerCase() && u.password === password
-      );
-      
-      if (foundUser) {
-        // Remove password before storing in state
-        const { password: _, ...userWithoutPassword } = foundUser;
-        setUser(userWithoutPassword);
-        localStorage.setItem("user", JSON.stringify(userWithoutPassword));
-        toast.success("Successfully logged in!");
-        return;
+      if (response.success && response.user) {
+        setUser(response.user as User);
+        localStorage.setItem("thynkai_token", response.token!);
+        toast.success(`Welcome back, ${response.user.name}!`);
+        return true;
+      } else {
+        toast.error(response.message || "Invalid credentials");
+        return false;
       }
-      
-      throw new Error("Invalid credentials");
     } catch (error) {
-      toast.error("Login failed. Please check your credentials.");
-      throw error;
+      console.error("Login error:", error);
+      toast.error("An unexpected error occurred. Please try again.");
+      return false;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const signup = async (email: string, name: string, password: string) => {
-    setIsLoading(true);
+  // Register handler
+  const register = async (userData: RegisterData): Promise<boolean> => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      setIsLoading(true);
+      const response = await authService.register(userData);
       
-      // Check if email is already in use
-      if (mockUsers.some(u => u.email.toLowerCase() === email.toLowerCase())) {
-        throw new Error("Email already in use");
+      if (response.success && response.user) {
+        setUser(response.user as User);
+        localStorage.setItem("thynkai_token", response.token!);
+        toast.success(`Welcome to ThynkAI, ${response.user.name}!`);
+        return true;
+      } else {
+        toast.error(response.message || "Could not create account");
+        return false;
       }
-      
-      // For demo purposes only - in a real app, this would be a backend call
-      const newUser = {
-        id: "user-" + Date.now(),
-        email,
-        name,
-        points: 3,
-        projectsGenerated: 0,
-        subscriptionTier: 'free' as SubscriptionTier,
-        subscriptionActive: true
-      };
-      
-      setUser(newUser);
-      localStorage.setItem("user", JSON.stringify(newUser));
-      toast.success("Account created successfully!");
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Signup failed. Please try again.";
-      toast.error(errorMessage);
-      throw error;
+      console.error("Registration error:", error);
+      toast.error("An unexpected error occurred. Please try again.");
+      return false;
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Signup handler (wrapper for register to maintain compatibility with components using signup)
+  const signup = async (name: string, email: string, password: string): Promise<boolean> => {
+    return register({ name, email, password });
+  };
+
+  // Logout handler
   const logout = () => {
+    localStorage.removeItem("thynkai_token");
     setUser(null);
-    localStorage.removeItem("user");
-    toast.success("Logged out successfully");
+    toast.success("You have been logged out.");
   };
 
-  const updateUserPoints = (newPoints: number) => {
+  // Update user credits
+  const updateCredits = (newCredits: number) => {
     if (user) {
-      const updatedUser = { ...user, points: newPoints };
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+      authService.updateUserCredits(user.id, newCredits);
+      setUser({ ...user, credits: newCredits });
     }
   };
 
-  const incrementProjectCount = () => {
+  // Upgrade user to pro
+  const upgradeToPro = () => {
     if (user) {
-      const updatedUser = { 
-        ...user, 
-        projectsGenerated: user.projectsGenerated + 1,
-        points: user.subscriptionTier === 'free' ? user.points - 1 : user.points
-      };
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+      authService.upgradeUserToPro(user.id);
+      setUser({ ...user, isPro: true });
+      toast.success("Your account has been upgraded to PRO!");
     }
-  };
-
-  const checkRemainingGenerations = () => {
-    if (!user) {
-      return { canGenerate: false, remaining: 0 };
-    }
-
-    if (user.subscriptionTier === 'free') {
-      return { 
-        canGenerate: user.points > 0, 
-        remaining: user.points 
-      };
-    }
-    
-    // Pro or team users have unlimited generations
-    return { canGenerate: true, remaining: Infinity };
   };
 
   const value = {
     user,
+    isAuthenticated: !!user,
     isLoading,
     login,
+    register,
     signup,
     logout,
-    isAuthenticated: !!user,
-    updateUserPoints,
-    incrementProjectCount,
-    checkRemainingGenerations
+    updateCredits,
+    upgradeToPro,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+
+// Custom hook for using auth context
+export const useAuth = () => useContext(AuthContext);

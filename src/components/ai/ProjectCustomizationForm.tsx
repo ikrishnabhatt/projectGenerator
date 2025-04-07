@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,7 +47,7 @@ interface ProjectCustomizationFormProps {
 
 const ProjectCustomizationForm: React.FC<ProjectCustomizationFormProps> = ({ onGenerated }) => {
   // Auth context for user info
-  const { isAuthenticated, user, incrementProjectCount, checkRemainingGenerations } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   
   // Form state
   const [formStep, setFormStep] = useState(1);
@@ -131,29 +130,20 @@ const ProjectCustomizationForm: React.FC<ProjectCustomizationFormProps> = ({ onG
       return;
     }
 
-    const { canGenerate, remaining } = checkRemainingGenerations();
-    
-    if (!canGenerate) {
-      toast.error("You've reached your generation limit. Please upgrade your plan.");
-      return;
-    }
-
-    // Prepare project requirements
-    const requirements: ProjectRequirement = {
-      projectName,
-      projectType,
-      description: projectDescription,
-      features: customFeatures,
-      techStack: selectedTechStack,
-      imageUrls,
-      themeColor: selectedTheme
-    };
-
+    // Template generation is now unlimited
     setIsGenerating(true);
     
     try {
       // Generate the project
-      const project = await generateProject(requirements);
+      const project = await generateProject({
+        projectName,
+        projectType,
+        description: projectDescription,
+        features: customFeatures,
+        techStack: selectedTechStack,
+        imageUrls,
+        themeColor: selectedTheme
+      });
       
       // Update state and notify parent component
       setGeneratedProject(project);
@@ -161,12 +151,7 @@ const ProjectCustomizationForm: React.FC<ProjectCustomizationFormProps> = ({ onG
         onGenerated(project);
       }
       
-      // Update user's project count
-      incrementProjectCount();
-      
-      if (user?.subscriptionTier === 'free' && remaining > 0) {
-        toast(`You have ${remaining - 1} free generations remaining`);
-      }
+      toast.success("Project generated successfully!");
       
       // Move to the preview step
       setFormStep(4);

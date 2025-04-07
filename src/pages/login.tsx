@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import Footer from "@/components/Footer";
 import { backgroundImages } from "@/assets/template-thumbnails";
 
 const Login = () => {
@@ -33,10 +33,13 @@ const Login = () => {
     setLoading(true);
     
     try {
-      await login(email, password);
-      navigate("/");
+      const success = await login({ email, password });
+      if (success) {
+        navigate("/");
+      }
     } catch (error) {
       console.error("Login error:", error);
+      toast.error("Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
     }
@@ -103,8 +106,8 @@ const Login = () => {
             
             <div className="mt-4 p-3 bg-gray-50 rounded-md text-xs text-gray-600">
               <p className="font-semibold mb-1">Demo credentials:</p>
-              <p>Email: demo@example.com</p>
-              <p>Password: password123</p>
+              <p>Admin: admin@thynkai.com / admin123 (unlimited access)</p>
+              <p>User: demo@example.com / password123</p>
             </div>
           </CardContent>
           <CardFooter className="flex justify-center">
@@ -117,7 +120,6 @@ const Login = () => {
           </CardFooter>
         </Card>
       </div>
-      
     </>
   );
 };

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-// import Footer from "@/components/Footer";
 import { backgroundImages } from "@/assets/template-thumbnails";
 
 const Signup = () => {
@@ -46,21 +46,24 @@ const Signup = () => {
     setLoading(true);
     
     try {
-      await signup(name, email, password);
-      navigate("/");
+      const success = await signup(name, email, password);
+      if (success) {
+        navigate("/");
+      } else {
+        setLoading(false);
+      }
     } catch (error) {
       console.error("Signup error:", error);
       // Error is already handled in the auth context
-    } finally {
       setLoading(false);
     }
   };
 
   return (
     <>
-      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-teal-50 to-blue-50">
+      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100">
         <div className="absolute inset-0 z-0 opacity-20">
-          <div className="absolute inset-0 bg-gradient-to-br from-teal-500 to-blue-500" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#9b87f5] to-[#D946EF]" />
           <div 
             className="absolute inset-0 bg-center bg-cover" 
             style={{ backgroundImage: `url(${backgroundImages.signup})` }}
@@ -121,7 +124,7 @@ const Signup = () => {
               </div>
               <Button
                 type="submit"
-                className="w-full bg-teal-600 hover:bg-teal-500"
+                className="w-full bg-gradient-to-r from-[#9b87f5] to-[#D946EF] hover:opacity-90 text-white"
                 disabled={loading}
               >
                 {loading ? "Creating account..." : "Create account"}
@@ -129,16 +132,15 @@ const Signup = () => {
             </form>
           </CardContent>
           <CardFooter className="flex justify-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Already have an account?{" "}
-              <Link to="/login" className="text-teal-600 hover:underline">
+              <Link to="/login" className="text-primary hover:underline">
                 Sign in
               </Link>
             </p>
           </CardFooter>
         </Card>
       </div>
-      {/* <Footer /> */}
     </>
   );
 };

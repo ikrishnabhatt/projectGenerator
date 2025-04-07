@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -6,16 +7,27 @@ import { Link } from "react-router-dom";
 type SubscriptionPromptProps = {
   open: boolean;
   onClose: () => void;
+  title?: string;
+  description?: string;
+  buttonText?: string;
+  buttonLink?: string;
 };
 
-const SubscriptionPrompt: React.FC<SubscriptionPromptProps> = ({ open, onClose }) => {
+const SubscriptionPrompt: React.FC<SubscriptionPromptProps> = ({ 
+  open, 
+  onClose,
+  title = "Upgrade Your Plan",
+  description = "You've used all your free generations. Upgrade to a premium plan to continue creating amazing projects.",
+  buttonText = "View Plans",
+  buttonLink = "/pricing"
+}) => {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md bg-[#F6F8D5] border-t-4 border-[#5A9C99] rounded-xl">
         <DialogHeader>
-          <DialogTitle className="text-[#5A9C99]">Upgrade Your Plan</DialogTitle>
+          <DialogTitle className="text-[#5A9C99]">{title}</DialogTitle>
           <DialogDescription className="text-[#A1A55C]">
-            You've used all your free generations. Upgrade to a premium plan to continue creating amazing projects.
+            {description}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col space-y-4 py-4">
@@ -43,8 +55,8 @@ const SubscriptionPrompt: React.FC<SubscriptionPromptProps> = ({ open, onClose }
         </div>
         <DialogFooter className="flex flex-col sm:flex-row sm:justify-between gap-4">
           <Button variant="outline" className="border-[#A1A55C] text-[#A1A55C] hover:border-[#5A9C99] hover:text-[#5A9C99]" onClick={onClose}>Maybe Later</Button>
-          <Link to="/pricing" className="w-full sm:w-auto">
-            <Button className="w-full bg-[#5A9C99] hover:bg-[#5A9C99]/90 text-white">View Plans</Button>
+          <Link to={buttonLink} className="w-full sm:w-auto">
+            <Button className="w-full bg-[#5A9C99] hover:bg-[#5A9C99]/90 text-white">{buttonText}</Button>
           </Link>
         </DialogFooter>
       </DialogContent>

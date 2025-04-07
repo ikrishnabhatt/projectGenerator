@@ -6,15 +6,15 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 222.2 47.4% 11.2%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 222.2 47.4% 11.2%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 222.2 47.4% 11.2%;
 
-    --primary: 262 83% 58%;
+    --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -31,57 +31,57 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 262 83% 58%;
+    --ring: 222.2 47.4% 11.2%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222.2 47.4% 11.2%;
+    --sidebar-primary: 222.2 47.4% 11.2%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 222.2 47.4% 11.2%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 0 0% 0%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 0 0% 5%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 0 0% 5%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 263 70% 50%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 0 0% 5%;
 
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 0 0% 10%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
+    --muted: 0 0% 15%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 0 0% 15%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 262.1 83.3% 57.8%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 210 40% 98%;
     
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-background: 0 0% 0%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 210 40% 98%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 210 40% 98%;
   }
 }
 
@@ -100,7 +100,7 @@
 }
 
 .template-card {
-  @apply rounded-lg overflow-hidden border border-gray-200 hover:border-brand-purple transition-all duration-300;
+  @apply rounded-lg overflow-hidden border border-gray-200 hover:border-primary transition-all duration-300;
 }
 
 .template-image {
@@ -109,4 +109,137 @@
 
 .button-hover {
   @apply hover:opacity-90 transition-opacity duration-200;
+}
+
+/* Custom gradient backgrounds */
+.thynk-gradient-bg-light {
+  @apply bg-white;
+}
+
+.thynk-gradient-bg-dark {
+  @apply bg-black;
+}
+
+.thynk-card {
+  @apply bg-card rounded-lg shadow-md border p-6 hover:shadow-lg transition-all duration-300;
+}
+
+.thynk-button-primary {
+  @apply bg-primary hover:opacity-90 text-white rounded-md px-4 py-2 font-medium shadow-sm transition-all duration-200;
+}
+
+.thynk-button-secondary {
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 border border-secondary/50 rounded-md px-4 py-2 font-medium shadow-sm transition-all duration-200;
+}
+
+/* Animation utilities */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out forwards;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Specific additions for CSS generation in AI service */
+.css-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12;
+}
+
+.css-heading-xl {
+  @apply text-4xl font-bold text-foreground sm:text-5xl md:text-6xl tracking-tight;
+}
+
+.css-heading-lg {
+  @apply text-3xl font-bold text-foreground sm:text-4xl tracking-tight;
+}
+
+.css-heading-md {
+  @apply text-2xl font-bold text-foreground tracking-tight;
+}
+
+.css-text-lead {
+  @apply text-xl text-muted-foreground leading-relaxed;
+}
+
+.css-text {
+  @apply text-base text-foreground;
+}
+
+.css-text-sm {
+  @apply text-sm text-foreground;
+}
+
+.css-grid {
+  @apply grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3;
+}
+
+.css-button-primary {
+  @apply inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring;
+}
+
+.css-button-secondary {
+  @apply inline-flex items-center justify-center rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground shadow-sm transition-colors hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring;
+}
+
+.css-card {
+  @apply rounded-lg border border-border bg-card shadow-sm;
+}
+
+.css-card-header {
+  @apply flex flex-col space-y-1.5 p-6;
+}
+
+.css-card-content {
+  @apply p-6 pt-0;
+}
+
+.css-card-footer {
+  @apply flex items-center p-6 pt-0;
+}
+
+.css-form-group {
+  @apply space-y-2;
+}
+
+.css-label {
+  @apply text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+}
+
+.css-input {
+  @apply flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.css-section {
+  @apply py-12 md:py-16 lg:py-20;
+}
+
+.css-feature {
+  @apply flex flex-col items-center text-center;
+}
+
+.css-feature-icon {
+  @apply h-12 w-12 rounded-full bg-primary/10 p-3 text-primary mb-4;
 }
