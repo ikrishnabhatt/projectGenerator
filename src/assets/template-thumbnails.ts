@@ -1,6 +1,7 @@
 
 export const templateThumbnails = {
   dashboard: "../../public/template-icons/dashboard.png",
+  admin: "../../public/template-icons/admindashboard.png",
   ecommerce: "../../public/template-icons/ecommerce.jpg",
   portfolio: "../../public/template-icons/portfolio.png",
   blog: "../../public/template-icons/blog.png",
@@ -12,6 +13,7 @@ export const templateThumbnails = {
   analyticsApp: "../../public/template-icons/another.jpg",
   ecommerceMobile: "../../public/template-icons/mobileapp.jpg",
   personalPortfolio: "../../public/template-icons/portfolio.png",
+  photography: "../../public/template-icons/photography.jpg",
   default: "../../public/template-icons/dashboard.png"
 };
 

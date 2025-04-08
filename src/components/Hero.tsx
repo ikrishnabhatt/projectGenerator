@@ -7,7 +7,7 @@ const Hero = () => {
   return (
     <section className="relative py-20 md:py-28 overflow-hidden">
       {/* Gradient background */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-br from-white via-blue-50 to-purple-50"></div>
+      <div className="absolute inset-0 z-0 hero-gradient-light dark:hero-gradient-dark"></div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center">

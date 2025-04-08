@@ -2,6 +2,7 @@
 import { generateProjectCss } from "./cssGenerationService";
 import { enhanceContent } from "./aiServiceEnhancer";
 import { pipeline } from "@huggingface/transformers";
+import { generateCodeWithGPT } from "./gptService";
 
 export interface ProjectRequirement {
   projectName: string;
@@ -36,13 +37,11 @@ async function loadModel() {
   try {
     if (!textGenerationModel) {
       // Use Hugging Face Transformers.js to load an open-source model
-      // This will use a smaller model that can run in the browser
       textGenerationModel = await pipeline(
         "text-generation",
         "TinyLlama/TinyLlama-1.1B-Chat-v1.0", // Using a small open-source LLM
         { 
-          // Remove the quantized property as it's not recognized in the type definition
-          max_new_tokens: 2048 // Maximum generated tokens
+          // Options that are supported by the library
         }
       );
     }
@@ -428,7 +427,22 @@ document.addEventListener('DOMContentLoaded', function() {
 // AI generation using open-source model
 export const generateWithAI = async (prompt: string): Promise<{html?: string; css?: string; js?: string}> => {
   try {
-    // Try to load and use the AI model
+    console.log("Starting AI generation with prompt:", prompt);
+    
+    // First, try to use GPT service
+    try {
+      console.log("Attempting to use GPT service...");
+      const gptResult = await generateCodeWithGPT(prompt);
+      if (gptResult) {
+        console.log("GPT generation successful");
+        return gptResult;
+      }
+    } catch (gptError) {
+      console.error("GPT generation failed, falling back to TinyLlama:", gptError);
+    }
+    
+    // If GPT fails, try to use the TinyLlama model
+    console.log("Loading TinyLlama model...");
     const model = await loadModel();
     
     // Create a prompt for HTML generation
@@ -439,10 +453,9 @@ Do not include any explanations, only output valid HTML code that would go in an
 `;
 
     // Generate HTML using the model
+    console.log("Generating HTML...");
     const htmlResult = await model(htmlPrompt, {
-      max_new_tokens: 2048,
       temperature: 0.7,
-      repetition_penalty: 1.1
     });
     
     // Extract HTML from result
@@ -458,9 +471,9 @@ Only output valid CSS code, no explanations.
 `;
 
     // Generate CSS using the model
+    console.log("Generating CSS...");
     const cssResult = await model(cssPrompt, {
-      max_new_tokens: 2048,
-      temperature: 0.7
+      temperature: 0.7,
     });
     
     // Extract CSS from result
@@ -476,9 +489,9 @@ Only output valid JavaScript code, no explanations.
 `;
 
     // Generate JavaScript using the model
+    console.log("Generating JavaScript...");
     const jsResult = await model(jsPrompt, {
-      max_new_tokens: 1536,
-      temperature: 0.7
+      temperature: 0.7,
     });
     
     // Extract JavaScript from result
@@ -486,6 +499,7 @@ Only output valid JavaScript code, no explanations.
     // Clean up the JavaScript
     jsCode = jsCode.substring(jsCode.indexOf("//") >= 0 ? jsCode.indexOf("//") : 0);
     
+    console.log("AI Generation completed successfully");
     // Return the generated code
     return {
       html: htmlCode || "<!-- No HTML content was generated -->",
