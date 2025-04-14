@@ -6,7 +6,7 @@ export async function generateWithStarCoder(prompt: string): Promise<{
   js: string;
   react: string;
 }> {
-  const HF_TOKEN = "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"; // 🛑 Paste your HF token here
+  const HF_TOKEN = ""; // 🛑 Paste your HF token here
 
   const response = await fetch("https://api-inference.huggingface.co/models/bigcode/starcoder2-15b", {
     method: "POST",
