@@ -1,31 +1,89 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, AlertCircle, Download, Info } from "lucide-react";
+import { Loader2, Plus, Trash2, Sparkles, Eye, Download, Code } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { generateWithGroq } from "@/services/grokService"; // Import Groq service
+import { generateWithGroq, TECH_STACK_OPTIONS, TechStack, PageDescription, assembleProject } from "@/services/grokService";
+import { ProgressIndicator } from "@/components/ui/progress-indicator";
+import { useToast } from "@/components/ui/use-toast";
+import PreviewContainer from "./PreviewContainer";
+import GeneratedProject from "./GeneratedProject";
 
-const AIPlusGenerator: React.FC = () => {
+// Sample prompts
+const SAMPLE_PROMPTS = [
+  {
+    title: "E-commerce Dashboard",
+    description: "Create a modern e-commerce dashboard with order management, inventory tracking, and sales analytics. Include dark mode support and responsive design.",
+    techStack: "react-tailwind-node-mongo" as TechStack
+  },
+  {
+    title: "Personal Blog",
+    description: "Build a minimalist blog platform with markdown support, categories, search functionality, and a clean reading experience. Include SEO optimization.",
+    techStack: "vue-django-postgres" as TechStack
+  },
+  {
+    title: "Task Management App",
+    description: "Develop a Kanban-style task management app with real-time updates, file attachments, and team collaboration features. Include offline support.",
+    techStack: "react-firebase" as TechStack
+  },
+  {
+    title: "Learning Platform",
+    description: "Create an educational platform with course management, video lessons, quizzes, and progress tracking. Include accessibility features.",
+    techStack: "html-css-js-flask-sqlite" as TechStack
+  }
+];
+
+interface GeneratedCode {
+  html?: Record<string, string>;
+  css?: string;
+  js?: string;
+  react?: Record<string, string>;
+  backend?: string;
+  database?: string;
+  tailwind?: string;
+  firebase?: string;
+  vue?: string;
+}
+
+interface AIPlusGeneratorProps {
+  onGenerateProject?: (
+    projectName: string,
+    projectDescription: string,
+    pages: PageDescription[],
+    techStack: TechStack
+  ) => Promise<void>;
+  isGenerating?: boolean;
+  error?: string | null;
+}
+
+const AIPlusGenerator: React.FC<AIPlusGeneratorProps> = ({ 
+  onGenerateProject, 
+  isGenerating = false, 
+  error = null 
+}) => {
+  const { toast } = useToast();
   const [prompt, setPrompt] = useState("");
-  const [generating, setGenerating] = useState(false);
-  const [generatedCode, setGeneratedCode] = useState<{ html?: string; css?: string; js?: string; react?: string; backend?: string } | null>(null);
-  const [activeTab, setActiveTab] = useState("html");
-  const [apiKey, setApiKey] = useState(localStorage.getItem("openai_api_key") || "");
-  const [framework, setFramework] = useState("html");
+  const [generatedCode, setGeneratedCode] = useState<GeneratedCode | null>(null);
+  const [apiKey, setApiKey] = useState(localStorage.getItem("groq_api_key") || "");
+  const [techStack, setTechStack] = useState<TechStack>("react-tailwind-node-mongo");
   const [modelStatus, setModelStatus] = useState("");
   const { user, updateCredits } = useAuth();
+  const [showExamples, setShowExamples] = useState(false);
+  const [projectName, setProjectName] = useState("My AI Project");
+  const [pages, setPages] = useState<PageDescription[]>([
+    { name: "Home", path: "/", description: "Main landing page with featured content and navigation" }
+  ]);
+  const [showPreview, setShowPreview] = useState(false);
+  const [showCode, setShowCode] = useState(true);
 
   // Save API key to localStorage when it changes
   const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const key = e.target.value;
     setApiKey(key);
-    localStorage.setItem("openai_api_key", key);
+    localStorage.setItem("groq_api_key", key);
   };
 
   const handleGenerate = async () => {
@@ -38,7 +96,18 @@ const AIPlusGenerator: React.FC = () => {
       return;
     }
 
-    // Check if user has credits (if not superuser or PRO)
+    // Validate pages
+    for (const page of pages) {
+      if (!page.name.trim() || !page.path.trim() || !page.description.trim()) {
+        toast({
+          title: "Error",
+          description: "Please fill in all page details",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     if (!user?.isPro && !user?.isSuperUser && (user?.credits || 0) < 10) {
       toast({
         title: "Insufficient Credits",
@@ -49,28 +118,27 @@ const AIPlusGenerator: React.FC = () => {
     }
 
     try {
-      setGenerating(true);
       setModelStatus("Preparing AI model...");
 
-      // Enhance the prompt with framework preference if selected
-      const enhancedPrompt = framework === "html"
-        ? prompt
-        : `Create a ${framework} application for: ${prompt}`;
+      if (onGenerateProject) {
+        await onGenerateProject(projectName, prompt, pages, techStack);
+      } else {
+        // Fallback to direct generation if no prop function provided
+        const result = await generateWithGroq(
+          `${prompt}\n\nTechnology Stack: ${TECH_STACK_OPTIONS.find(opt => opt.value === techStack)?.label}`,
+          pages
+        );
 
-      // Use the Groq generation service
-      const result = await generateWithGroq(enhancedPrompt);
+        if (!user?.isPro && !user?.isSuperUser) {
+          updateCredits((user?.credits || 0) - 10);
+          toast({
+            title: "Credits Used",
+            description: "10 credits have been deducted for this AI+ generation.",
+          });
+        }
 
-      // If not superuser or PRO, deduct credits
-      if (!user?.isPro && !user?.isSuperUser) {
-        updateCredits((user?.credits || 0) - 10);
-        toast({
-          title: "Credits Used",
-          description: "10 credits have been deducted for this AI+ generation.",
-        });
+        setGeneratedCode(result);
       }
-
-      setGeneratedCode(result);
-      setActiveTab(framework === "react" ? "react" : "html"); // Select appropriate tab based on framework
 
       toast({
         title: "Generation Complete",
@@ -80,197 +148,299 @@ const AIPlusGenerator: React.FC = () => {
       console.error("AI Generation error:", error);
       toast({
         title: "Generation Failed",
-        description: error.message || "An error occurred during generation. Please try again.",
+        description: error instanceof Error ? error.message : "An error occurred during generation. Please try again.",
         variant: "destructive",
       });
     } finally {
       setModelStatus("");
-      setGenerating(false);
     }
   };
 
-  const downloadGeneratedCode = () => {
-    if (!generatedCode) return;
+  // Add handleSamplePrompt function
+  const handleSamplePrompt = (sample: typeof SAMPLE_PROMPTS[0]) => {
+    setPrompt(sample.description);
+    setTechStack(sample.techStack);
+    setShowExamples(false);
+  };
 
-    // Create content based on framework
-    let content = '';
-    if (framework === 'react') {
-      content = generatedCode.react || '';
-    } else {
-      content = `
-        <!DOCTYPE html>
-        <html lang="en">
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Generated Project</title>
-            <style>
-              ${generatedCode.css || ''}
-            </style>
-          </head>
-          <body>
-            ${generatedCode.html || ''}
+  const addPage = () => {
+    setPages([...pages, { name: "", path: "", description: "" }]);
+  };
 
-            <script>
-              ${generatedCode.js || ''}
-            </script>
-          </body>
-        </html>
-      `;
-    }
+  const removePage = (index: number) => {
+    setPages(pages.filter((_, i) => i !== index));
+  };
 
-    // Create file name
-    const fileName = framework === 'react' ? 'App.jsx' : 'index.html';
+  const updatePage = (index: number, field: keyof PageDescription, value: string) => {
+    const newPages = [...pages];
+    newPages[index] = { ...newPages[index], [field]: value };
+    setPages(newPages);
+  };
 
-    // Create and download the file
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  // Toggle between preview and code view
+  const toggleView = () => {
+    setShowPreview(!showPreview);
+    setShowCode(!showCode);
   };
 
   return (
-    <div className="space-y-6">
-      <Card className="bg-card text-card-foreground border-border">
-        <CardContent className="pt-6">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">AI+ Project Generation</h3>
-            <p className="text-muted-foreground">
-              Describe your project in detail and our AI will generate a complete solution for you.
-              {!user?.isPro && !user?.isSuperUser && (
-                <span className="block mt-2 text-orange-500 font-medium">
-                  This feature costs 10 credits per generation.
-                </span>
-              )}
-            </p>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="mb-6 text-center text-3xl font-bold">Generate with AI</h1>
+      <p className="mb-8 text-center text-lg text-muted-foreground">
+        Describe your project and its pages in detail, and our AI will generate the perfect solution for you.
+      </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="framework" className="mb-2 block">Choose Framework</Label>
-                <Select value={framework} onValueChange={setFramework}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Framework" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="html">HTML/CSS/JS</SelectItem>
-                    <SelectItem value="react">React</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+      {showExamples && (
+        <div className="mb-8 mx-auto max-w-4xl">
+          <Card>
+            <CardHeader>
+              <CardTitle>Example Projects</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {SAMPLE_PROMPTS.map((sample, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  className="flex flex-col items-start h-auto p-4 text-left"
+                  onClick={() => handleSamplePrompt(sample)}
+                >
+                  <span className="font-medium mb-1">{sample.title}</span>
+                  <span className="text-xs text-muted-foreground truncate max-w-full">
+                    {sample.description.length > 100 
+                      ? sample.description.substring(0, 100) + "..." 
+                      : sample.description}
+                  </span>
+                </Button>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
-              <div>
-                <Label htmlFor="api-key" className="mb-2 block">OpenAI API Key (Optional)</Label>
-                <Input
-                  type="password"
-                  id="api-key"
-                  placeholder="Enter OpenAI API key for better results"
-                  value={apiKey}
-                  onChange={handleApiKeyChange}
-                  className="w-full"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Will use local AI model if no API key provided
-                </p>
-              </div>
+      <div className="mx-auto max-w-4xl">
+        <Card>
+          <CardHeader>
+            <CardTitle>AI+ Project Generation</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label htmlFor="project-name" className="mb-2 block font-medium">
+                Project Name
+              </label>
+              <Input
+                id="project-name"
+                placeholder="Enter project name"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+              />
             </div>
 
-            <Textarea
-              placeholder="Describe your project in detail. For example: 'Create a responsive landing page for a coffee shop with a hero section, product showcase, about us section, and contact form. Use earthy colors like brown and green.'"
-              className="h-40 resize-none"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-            />
+            <div>
+              <label htmlFor="framework" className="mb-2 block font-medium">
+                Choose Tech Stack
+              </label>
+              <Select value={techStack} onValueChange={(value) => setTechStack(value as TechStack)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a tech stack" />
+                </SelectTrigger>
+                <SelectContent>
+                  {TECH_STACK_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-            <div className="flex flex-col space-y-2">
-              {modelStatus && (
-                <div className="text-sm text-blue-500 dark:text-blue-400">
-                  <Loader2 className="inline mr-2 h-4 w-4 animate-spin" />
-                  {modelStatus}
-                </div>
-              )}
+            <div>
+              <label htmlFor="api-key" className="mb-2 block font-medium">
+                Groq API Key
+              </label>
+              <Input
+                id="api-key"
+                type="password"
+                placeholder="Enter your Groq API key"
+                value={apiKey}
+                onChange={handleApiKeyChange}
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                Required for AI+ generation with deepseek-r1-distill-llama-70b model
+              </p>
+            </div>
 
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  {!user?.isPro && !user?.isSuperUser && (
-                    <>Your available credits: <span className="font-semibold">{user?.credits || 0}</span></>
-                  )}
-                  {(user?.isPro || user?.isSuperUser) && (
-                    <span className="text-green-500 dark:text-green-400 font-semibold">Unlimited generations (PRO)</span>
-                  )}
-                </p>
-
-                <Button
-                  onClick={handleGenerate}
-                  disabled={generating || !prompt.trim()}
-                  className="ml-auto"
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <label htmlFor="project-description" className="block font-medium">
+                  Project Overview
+                </label>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowExamples(!showExamples)}
                 >
-                  {generating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {generating ? "Generating..." : "Generate Project"}
+                  {showExamples ? "Hide Examples" : "Show Examples"}
                 </Button>
               </div>
+              <Textarea
+                id="project-description"
+                placeholder="Describe your overall project goals, target audience, and key features..."
+                rows={4}
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                className="resize-none"
+              />
             </div>
-          </div>
-        </CardContent>
-      </Card>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <label className="block font-medium">Pages</label>
+                <Button variant="outline" size="sm" onClick={addPage}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Page
+                </Button>
+              </div>
+              
+              {pages.map((page, index) => (
+                <div key={index} className="space-y-2 p-4 border rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-medium">Page {index + 1}</h3>
+                    {index > 0 && (
+                      <Button variant="ghost" size="sm" onClick={() => removePage(index)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-sm">Page Name</label>
+                      <Input
+                        placeholder="e.g., Dashboard"
+                        value={page.name}
+                        onChange={(e) => updatePage(index, 'name', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm">URL Path</label>
+                      <Input
+                        placeholder="e.g., /dashboard"
+                        value={page.path}
+                        onChange={(e) => updatePage(index, 'path', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm">Page Description</label>
+                    <Textarea
+                      placeholder="Describe what this page should do and what features it should have..."
+                      value={page.description}
+                      onChange={(e) => updatePage(index, 'description', e.target.value)}
+                      rows={3}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {!user?.isPro && !user?.isSuperUser && (
+              <div className="flex items-center gap-2 rounded-md bg-orange-50 p-2 dark:bg-orange-900/20">
+                <p className="text-sm text-orange-600 dark:text-orange-400">
+                  This feature costs 10 credits per generation. Your credits: {user?.credits || 0}
+                </p>
+              </div>
+            )}
+
+            {(user?.isPro || user?.isSuperUser) && (
+              <div className="flex items-center gap-2 rounded-md bg-green-50 p-2 dark:bg-green-900/20">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-800 dark:text-green-400">
+                  {/* Check icon */}
+                </span>
+                <p className="text-sm text-green-600 dark:text-green-400">
+                  Unlimited generations (PRO)
+                </p>
+              </div>
+            )}
+
+            {modelStatus && (
+              <div className="text-sm text-blue-500 dark:text-blue-400">
+                <Loader2 className="inline mr-2 h-4 w-4 animate-spin" />
+                {modelStatus}
+              </div>
+            )}
+
+            {error && (
+              <div className="p-3 bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 rounded-md">
+                {error}
+              </div>
+            )}
+          </CardContent>
+          <CardFooter className="flex flex-wrap gap-2">
+            <Button 
+              className="flex-1" 
+              onClick={handleGenerate}
+              disabled={isGenerating}
+            >
+              {isGenerating ? (
+                <span className="flex items-center gap-2">
+                  <ProgressIndicator className="h-4 w-4" />
+                  Generating...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4" />
+                  Generate Project
+                </span>
+              )}
+            </Button>
+            
+            {generatedCode && (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={toggleView}
+                >
+                  {showPreview ? (
+                    <>
+                      <Code className="h-4 w-4 mr-2" />
+                      Show Code
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="h-4 w-4 mr-2" />
+                      Show Preview
+                    </>
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download Project
+                </Button>
+              </>
+            )}
+          </CardFooter>
+        </Card>
+      </div>
 
       {generatedCode && (
-        <Card className="mt-8 border-border">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Generated Project</h3>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={downloadGeneratedCode}
-                className="flex items-center gap-2"
-              >
-                <Download className="h-4 w-4" />
-                Download Code
-              </Button>
-            </div>
-
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-3 md:grid-cols-5">
-                {framework !== "react" && <TabsTrigger value="html">HTML</TabsTrigger>}
-                {framework !== "react" && <TabsTrigger value="css">CSS</TabsTrigger>}
-                {framework !== "react" && <TabsTrigger value="js">JavaScript</TabsTrigger>}
-                {framework === "react" && <TabsTrigger value="react">React</TabsTrigger>}
-                {generatedCode.backend && <TabsTrigger value="backend">Backend</TabsTrigger>}
-              </TabsList>
-
-              {framework !== "react" && (
-                <TabsContent value="html">
-                  <pre className="whitespace-pre-wrap">{generatedCode.html}</pre>
-                </TabsContent>
-              )}
-              {framework !== "react" && (
-                <TabsContent value="css">
-                  <pre className="whitespace-pre-wrap">{generatedCode.css}</pre>
-                </TabsContent>
-              )}
-              {framework !== "react" && (
-                <TabsContent value="js">
-                  <pre className="whitespace-pre-wrap">{generatedCode.js}</pre>
-                </TabsContent>
-              )}
-              {framework === "react" && (
-                <TabsContent value="react">
-                  <pre className="whitespace-pre-wrap">{generatedCode.react}</pre>
-                </TabsContent>
-              )}
-              {generatedCode.backend && (
-                <TabsContent value="backend">
-                  <pre className="whitespace-pre-wrap">{generatedCode.backend}</pre>
-                </TabsContent>
-              )}
-            </Tabs>
-          </CardContent>
-        </Card>
+        <div className="mt-8">
+          {showPreview ? (
+            <PreviewContainer 
+              project={generatedCode} 
+              techStack={techStack} 
+              onClose={() => setShowPreview(false)} 
+            />
+          ) : (
+            <GeneratedProject
+              project={generatedCode}
+              techStack={techStack}
+              projectName={projectName}
+            />
+          )}
+        </div>
       )}
     </div>
   );
