@@ -43,9 +43,10 @@ const techStackOptions = [
 
 interface ProjectCustomizationFormProps {
   onGenerated?: (project: GeneratedProject) => void;
+  onProjectGenerated?: (project: any) => void; // Added this prop for zip download functionality
 }
 
-const ProjectCustomizationForm: React.FC<ProjectCustomizationFormProps> = ({ onGenerated }) => {
+const ProjectCustomizationForm: React.FC<ProjectCustomizationFormProps> = ({ onGenerated, onProjectGenerated }) => {
   // Auth context for user info
   const { isAuthenticated, user } = useAuth();
   
@@ -145,10 +146,23 @@ const ProjectCustomizationForm: React.FC<ProjectCustomizationFormProps> = ({ onG
         themeColor: selectedTheme
       });
       
-      // Update state and notify parent component
+      // Update state and notify parent components
       setGeneratedProject(project);
+      
+      // Call both callbacks to ensure compatibility with both components
       if (onGenerated) {
         onGenerated(project);
+      }
+      
+      if (onProjectGenerated) {
+        // Format project data for zip download functionality
+        const formattedProject = {
+          html: project.codeSnippets.frontend || "",
+          css: extractCSS(project.codeSnippets.frontend || ""),
+          js: project.codeSnippets.backend || "",
+          // Add other fields as needed for zip download
+        };
+        onProjectGenerated(formattedProject);
       }
       
       toast.success("Project generated successfully!");
@@ -161,6 +175,12 @@ const ProjectCustomizationForm: React.FC<ProjectCustomizationFormProps> = ({ onG
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  // Helper function to extract CSS from HTML
+  const extractCSS = (html: string): string => {
+    const styleMatch = html.match(/<style>([\s\S]*?)<\/style>/);
+    return styleMatch && styleMatch[1] ? styleMatch[1].trim() : "";
   };
 
   // Parse code snippets from the project
