@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -75,7 +74,7 @@ const PopularTemplates = () => {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row justify-between items-center mb-10">
-        <h2 className="text-3xl font-bold mb-4 md:mb-0 text-[#5A9C99]">Popular Templates</h2>
+        <h2 className="text-3xl font-bold mb-4 md:mb-0 text-[#5A9C99] dark:text-[#7be3df]">Popular Templates</h2>
         <div className="flex flex-wrap gap-2">
           {categories.map((category) => (
             <Button
@@ -83,7 +82,9 @@ const PopularTemplates = () => {
               variant={activeCategory === category ? "default" : "outline"}
               size="sm"
               onClick={() => setActiveCategory(category)}
-              className={activeCategory === category ? "bg-[#5A9C99] hover:bg-[#5A9C99]/90 text-white" : "border-[#A1A55C] hover:border-[#5A9C99] text-[#A1A55C]"}
+              className={activeCategory === category 
+                ? "bg-[#5A9C99] hover:bg-[#5A9C99]/90 text-white" 
+                : "border-[#A1A55C] hover:border-[#5A9C99] text-[#A1A55C] dark:text-[#cfd28f] dark:border-[#cfd28f]"}
             >
               {category}
             </Button>
@@ -96,18 +97,18 @@ const PopularTemplates = () => {
           ? Array(3)
               .fill(0)
               .map((_, index) => (
-                <Card key={index} className="overflow-hidden bg-white/80 backdrop-blur-sm">
-                  <Skeleton className="w-full h-48" />
+                <Card key={index} className="overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                  <Skeleton className="w-full h-48 dark:bg-gray-700" />
                   <CardContent className="p-4">
-                    <Skeleton className="h-6 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-full mb-2" />
-                    <Skeleton className="h-4 w-2/3" />
+                    <Skeleton className="h-6 w-3/4 mb-2 dark:bg-gray-700" />
+                    <Skeleton className="h-4 w-full mb-2 dark:bg-gray-700" />
+                    <Skeleton className="h-4 w-2/3 dark:bg-gray-700" />
                   </CardContent>
                 </Card>
               ))
           : templates.map((template) => (
               <Link to={`/templates/${template.id}`} key={template.id}>
-                <Card className="overflow-hidden template-card h-full bg-white/80 backdrop-blur-sm border-t-4 border-[#A1A55C] rounded-lg hover:shadow-xl transition-all duration-300">
+                <Card className="overflow-hidden template-card h-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-t-4 border-[#A1A55C] rounded-lg hover:shadow-xl transition-all duration-300">
                   <img
                     src={template.image}
                     alt={template.name}
@@ -116,15 +117,15 @@ const PopularTemplates = () => {
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between">
                       <div>
-                        <h3 className="font-medium text-lg mb-1 text-[#5A9C99]">{template.name}</h3>
-                        <p className="text-sm text-[#A1A55C] mb-3">{template.description}</p>
+                        <h3 className="font-medium text-lg mb-1 text-[#5A9C99] dark:text-[#7be3df]">{template.name}</h3>
+                        <p className="text-sm text-[#A1A55C] dark:text-[#cfd28f] mb-3">{template.description}</p>
                         {template.author && (
-                          <p className="text-xs text-gray-400 mb-3">
+                          <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
                             Created by: {template.author}
                           </p>
                         )}
                       </div>
-                      <span className="text-xs font-medium px-2 py-1 bg-gray-100 rounded-full">
+                      <span className="text-xs font-medium px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full">
                         {template.category}
                       </span>
                     </div>
@@ -134,7 +135,7 @@ const PopularTemplates = () => {
                         size="sm" 
                         onClick={(e) => handleDownload(template, e)}
                         disabled={downloadingId === template.id}
-                        className="border-[#A1A55C] hover:border-[#5A9C99] text-[#A1A55C]"
+                        className="border-[#A1A55C] hover:border-[#5A9C99] text-[#A1A55C] dark:text-[#cfd28f] dark:border-[#cfd28f]"
                       >
                         <Download className="h-4 w-4 mr-1" />
                         {downloadingId === template.id ? "Downloading..." : "Download"}
@@ -144,6 +145,7 @@ const PopularTemplates = () => {
                           variant="ghost" 
                           size="sm" 
                           onClick={(e) => handleOpenGithub(template.githubUrl, e)}
+                          className="dark:text-gray-300 dark:hover:text-white"
                         >
                           <ExternalLink className="h-4 w-4 mr-1" />
                           GitHub

@@ -11,6 +11,14 @@ interface CssTemplate {
   darkMode: string;
 }
 
+// HEX to RGB conversion helper
+const hexToRgb = (hex: string): string => {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `${r}, ${g}, ${b}`;
+};
+
 export const generateProjectCss = (requirements: ProjectRequirement): string => {
   const { projectType, themeColor, features } = requirements;
   
@@ -77,43 +85,63 @@ img {
 }`;
 
   // Generate CSS variables based on theme color
-  let primaryColor, primaryLight, primaryDark, accentColor;
+  let primaryColor, primaryLight, primaryDark, accentColor, primaryRgb;
 
+if (themeColor?.startsWith('#')) {
+  // Custom color handling
+  primaryColor = themeColor;
+  primaryLight = `${themeColor}80`; // Add transparency
+  primaryDark = `${themeColor}CC`; // Darker variant
+  accentColor = `${themeColor}40`;
+  primaryRgb = hexToRgb(themeColor);
+} else {
+  // Existing color switch cases
   switch (themeColor) {
     case 'blue':
       primaryColor = '#2563eb';
       primaryLight = '#60a5fa';
       primaryDark = '#1d4ed8';
       accentColor = '#93c5fd';
+      primaryRgb = '37, 99, 235';
       break;
     case 'green':
       primaryColor = '#059669';
       primaryLight = '#34d399';
       primaryDark = '#047857';
       accentColor = '#6ee7b7';
+      primaryRgb = '5, 150, 105';
       break;
     case 'red':
       primaryColor = '#dc2626';
       primaryLight = '#f87171';
       primaryDark = '#b91c1c';
       accentColor = '#fca5a5';
+      primaryRgb = '220, 38, 38';
       break;
     case 'purple':
       primaryColor = '#7c3aed';
       primaryLight = '#a78bfa';
       primaryDark = '#6d28d9';
       accentColor = '#c4b5fd';
+      primaryRgb = '124, 58, 237';
       break;
     default:
       primaryColor = '#006A71';
       primaryLight = '#5A9C99';
       primaryDark = '#00565B';
       accentColor = '#A1A55C';
+      primaryRgb = '0, 106, 113';
   }
+}
 
   // CSS variables
   const variables = `:root {
   /* Color variables */
+  
+  --primary-color-rgb: ${primaryRgb};
+  --primary-light-rgb: ${primaryLight.startsWith('#') ? hexToRgb(primaryLight) : primaryRgb};
+  --primary-dark-rgb: ${primaryDark.startsWith('#') ? hexToRgb(primaryDark) : primaryRgb};
+
   --primary-color: ${primaryColor};
   --primary-light: ${primaryLight};
   --primary-dark: ${primaryDark};
@@ -482,6 +510,58 @@ img {
   padding: 0.25rem 0.75rem;
   border-radius: var(--border-radius-full);
   font-size: var(--font-size-xs);
+}`;
+} else if (projectType.includes('dashboard')) {
+  components = `/* Dashboard components */
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  background-color: var(--card-bg);
+  border-right: 1px solid var(--border-color);
+  padding: 1.5rem;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  color: var(--text-muted);
+  transition: var(--transition-all);
+}
+
+.nav-item:hover, .nav-item.active {
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+  color: var(--primary-color);
+}
+
+.main-content {
+  padding: 2rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
 }`;
   } else if (projectType.includes('portfolio') || projectType.includes('personal website')) {
     components = `/* Portfolio components */
@@ -981,6 +1061,7 @@ img {
   /* Add more xl variants as needed */
 }`;
 
+
   // Animations
   const animations = `/* Animations */
 @keyframes fadeIn {
@@ -1056,6 +1137,7 @@ img {
   --input-bg: #1f2937;
   --input-border: #4b5563;
 }`;
+
 
   return {
     base,

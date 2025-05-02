@@ -91,19 +91,19 @@ const Templates = () => {
   };
 
   return (
-    <div className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 min-h-[calc(100vh-64px)]">
+    <div className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950 min-h-[calc(100vh-64px)]">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-          <h1 className="text-3xl font-bold mb-4 md:mb-0">Templates</h1>
+          <h1 className="text-3xl font-bold mb-4 md:mb-0 text-foreground">Templates</h1>
           <div className="w-full md:w-auto flex items-center">
             <div className="relative flex-grow mr-4">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-4 w-4" />
               <Input
                 type="text"
                 placeholder="Search templates..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
+                className="pl-9 dark:bg-gray-800/90"
               />
             </div>
             <div className="flex-shrink-0 flex space-x-2 overflow-x-auto pb-2 md:pb-0">
@@ -113,7 +113,7 @@ const Templates = () => {
                   variant={activeCategory === category ? "default" : "outline"}
                   size="sm"
                   onClick={() => setActiveCategory(category)}
-                  className={activeCategory === category ? "bg-teal-600 hover:bg-teal-700" : ""}
+                  className={activeCategory === category ? "bg-teal-600 hover:bg-teal-700 text-white" : ""}
                 >
                   {category}
                 </Button>
@@ -127,20 +127,20 @@ const Templates = () => {
             {Array(6)
               .fill(0)
               .map((_, index) => (
-                <Card key={index} className="overflow-hidden">
-                  <Skeleton className="w-full h-48" />
+                <Card key={index} className="overflow-hidden dark:bg-gray-800/70">
+                  <Skeleton className="w-full h-48 dark:bg-gray-700" />
                   <CardContent className="p-4">
-                    <Skeleton className="h-6 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-full mb-2" />
-                    <Skeleton className="h-4 w-2/3" />
+                    <Skeleton className="h-6 w-3/4 mb-2 dark:bg-gray-700" />
+                    <Skeleton className="h-4 w-full mb-2 dark:bg-gray-700" />
+                    <Skeleton className="h-4 w-2/3 dark:bg-gray-700" />
                   </CardContent>
                 </Card>
               ))}
           </div>
         ) : filteredTemplates.length === 0 ? (
           <div className="text-center py-12">
-            <h3 className="text-xl font-medium mb-2">No templates found</h3>
-            <p className="text-gray-500 mb-4">
+            <h3 className="text-xl font-medium mb-2 text-foreground">No templates found</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4">
               Try adjusting your search or filter criteria
             </p>
             <Button variant="outline" onClick={() => {
@@ -154,7 +154,7 @@ const Templates = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredTemplates.map((template) => (
               <Link to={`/templates/${template.id}`} key={template.id}>
-                <Card className="overflow-hidden template-card h-full">
+                <Card className="overflow-hidden template-card h-full dark:bg-gray-800/70 hover:shadow-lg dark:hover:shadow-indigo-900/10 transition-all duration-300">
                   <img
                     src={template.image}
                     alt={template.name}
@@ -163,15 +163,15 @@ const Templates = () => {
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between">
                       <div>
-                        <h3 className="font-medium text-lg mb-1">{template.name}</h3>
-                        <p className="text-sm text-gray-500 mb-3">{template.description}</p>
+                        <h3 className="font-medium text-lg mb-1 text-foreground">{template.name}</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{template.description}</p>
                         {template.author && (
-                          <p className="text-xs text-gray-400 mb-2">
+                          <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
                             Created by: {template.author}
                           </p>
                         )}
                       </div>
-                      <span className="text-xs font-medium px-2 py-1 bg-gray-100 rounded-full">
+                      <span className="text-xs font-medium px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full">
                         {template.category}
                       </span>
                     </div>

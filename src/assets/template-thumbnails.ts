@@ -8,7 +8,7 @@ export const templateThumbnails = {
   saas: "../../public/template-icons/saas.jpeg",
   mobileApp: "../../public/template-icons/mobileapp.png",
   landingPage: "../../public/template-icons/landingpage.png",
-  adminDashboard: "../../public/template-icons/admindashboard.png",
+  adminDashboard: "../../public/template-icons/developerportfolio.png",
   contentBlog: "../../public/template-icons/blog.png",
   analyticsApp: "../../public/template-icons/another.jpg",
   ecommerceMobile: "../../public/template-icons/mobileapp.jpg",
